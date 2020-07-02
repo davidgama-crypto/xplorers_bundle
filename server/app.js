@@ -18,9 +18,6 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-// Serve static files from the React app
-app.use(express.static(path.join(__dirname, 'client/build')));
-
 
 redisClient.on('connect', function(){
   console.log("Connected to redis");
@@ -32,6 +29,14 @@ app.use(function(req, res, next) {
   next();
 });
 
+
+
+// Serve static files from the React app
+app.use(
+    express.static(path.join(__dirname, '..', '..', 'client', 'build'), {
+      fallthrough: true,
+    })
+)
 // Fix static file serving in FireFox.
 app.use(
     '*',
