@@ -13,10 +13,10 @@
     "install:client": "cd client/ && npm install && cd ..",
     "install:server": "cd server/ && npm install && cd ..",
     "install": "npm run install:client && npm run install:server",
-    "build:client": "cd client/ && npm run build && cd ..",
-    "heroku-postbuild": "npm run build:client",
+    "build:client": "cd client && npm install && npm run build && cd ..",
     "start:server": "cd server/ && npm run start",
-    "start": "npm run start:server"
+    "start": "npm run start:server",
+    "heroku-postbuild": "npm run build:client"
   },
   "author": "Team Xplorers",
   "license": "MIT",
