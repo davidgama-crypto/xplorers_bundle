@@ -13,7 +13,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "postbuild": "mv build ../server/public/",
+    "postbuild": "cp -rf build/ ../server/public/",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },

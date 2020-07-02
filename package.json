@@ -16,6 +16,7 @@
     "build:client": "cd client && npm run build && cd ..",
     "start:server": "cd server/ && npm run start",
     "start": "npm run start:server",
+    "build": "cd client && npm run build",
     "heroku-postbuild": "cd client && npm install && npm run build"
   },
   "author": "Team Xplorers",
