@@ -14,10 +14,9 @@
     "install:server": "cd server/ && npm install && cd ..",
     "install": "npm run install:client && npm run install:server",
     "build:client": "cd client/ && npm run build && cd ..",
-    "build:server": "cd server/ && npm run build && cd ..",
-    "heroku-postbuild": "npm run build:client && npm run build:server",
+    "heroku-postbuild": "npm run build:client",
     "start:server": "cd server/ && npm run dev",
-    "start": "npm run start:server",
+    "start": "npm run start:server"
   },
   "author": "Team Xplorers",
   "license": "MIT",
