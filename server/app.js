@@ -29,23 +29,23 @@ app.use(function(req, res, next) {
   next();
 });
 
+app.use('/api/users', usersRouter);
 
 
 // Serve static files from the React app
 app.use(
-    express.static(path.join(__dirname, '..', '..', 'client', 'build'), {
-      fallthrough: true,
+    express.static(path.join(__dirname, '..',  'server', 'public','build'), {
+        fallthrough: true,
     })
 )
-// Fix static file serving in FireFox.
-app.use(
-    '*',
-    express.static(
-        path.join(__dirname, '..', '..', 'client', 'build', 'index.html')
-    )
-)
 
-app.use('/api/users', usersRouter);
+
+// The "catchall" handler: for any request that doesn't
+// match one above, send back React's index.html file.
+app.use('*', function (_, res,next) {
+    res.sendFile(path.join(__dirname, '..',  'server', 'public','build', 'index.html'));
+});
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
