@@ -4,19 +4,14 @@ var path = require("path");
 var cookieParser = require("cookie-parser");
 var logger = require("morgan");
 
-var indexRouter = require("./routes/index");
 var usersRouter = require("./routes/users");
+var botRouter = require("./routes/bot");
 var redis = require("redis");
 const redisConfig = require("./utils/redisConfig");
 
 var app = express();
 
 const redisClient = redis.createClient(redisConfig.REDIS_CONF);
-
-app.use(logger("dev"));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
 
 redisClient.on("connect", function () {
   console.log("Connected to redis");
@@ -29,6 +24,7 @@ app.use(function (req, res, next) {
 });
 
 app.use("/api/users", usersRouter);
+app.use("/api/bot", botRouter);
 
 // Serve static files from the React app
 app.use(
@@ -58,5 +54,10 @@ app.use(function (err, req, res, next) {
   res.status(err.status || 500);
   res.send("error");
 });
+
+app.use(logger("dev"));
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(cookieParser());
 
 module.exports = app;
