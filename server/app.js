@@ -6,25 +6,14 @@ var logger = require("morgan");
 
 var usersRouter = require("./routes/users");
 var botRouter = require("./routes/bot");
-var redis = require("redis");
-const redisConfig = require("./utils/redisConfig");
-
+var roomsRouter = require("./routes/rooms");
 var app = express();
 
-const redisClient = redis.createClient(redisConfig.REDIS_CONF);
-
-redisClient.on("connect", function () {
-  console.log("Connected to redis");
-});
-
-// add redisClient as a middleware
-app.use(function (req, res, next) {
-  res.redisClient = redisClient;
-  next();
-});
 
 app.use("/api/users", usersRouter);
 app.use("/api/bot", botRouter);
+app.use("/api/rooms", roomsRouter);
+
 
 // Serve static files from the React app
 app.use(

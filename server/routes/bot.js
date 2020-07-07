@@ -1,16 +1,18 @@
-var express = require("express");
-
-var router = express.Router();
+let express = require("express");
+let router = express.Router();
 
 const { createEventAdapter } = require("@slack/events-api");
 const { WebClient } = require("@slack/web-api");
+const RoomsController = require("../controllers/RoomsController");
+const roomsController = new RoomsController();
 
 // Read necessary env vars for Slack SDK
 const slackSigningSecret = process.env.SLACK_SIGNING_SECRET;
 const slackToken = process.env.SLACK_TOKEN;
+const serverURL = process.env.SELF_DOMAIN;
 
-if (!slackSigningSecret || !slackToken) {
-  console.error("SLACK_SIGNING_SECRET or SLACK_TOKEN env var not set!");
+if (!slackSigningSecret || !slackToken || !serverURL) {
+  console.error("SLACK_SIGNING_SECRET or SLACK_TOKEN or SELF_DOMAIN env var not set!");
   process.exit(1);
 }
 
@@ -20,10 +22,10 @@ const slackClient = new WebClient(slackToken);
 
 slackEvents.on("app_mention", async (event) => {
   console.log("Incoming app_mention event.text:", event.text);
-
   var text = "";
   if (event.text.includes("play")) {
-    text = "Playing isn't quite ready yet, sorry!";
+    const roomId = await roomsController.generateRoom();
+    text =  serverURL + roomId;
   } else {
     text = "Sorry I didn't quite get that, try saying `@bundle let's play!`";
   }
