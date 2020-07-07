@@ -12,7 +12,7 @@ const slackToken = process.env.SLACK_TOKEN;
 const serverURL = process.env.SELF_DOMAIN;
 
 if (!slackSigningSecret || !slackToken || !serverURL) {
-  console.error("SLACK_SIGNING_SECRET or SLACK_TOKEN env var not set!");
+  console.error("SLACK_SIGNING_SECRET or SLACK_TOKEN or SELF_DOMAIN env var not set!");
   process.exit(1);
 }
 

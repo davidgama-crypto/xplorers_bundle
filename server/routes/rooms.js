@@ -7,7 +7,7 @@ const roomsController = new RoomsController();
 const serverURL = process.env.SELF_DOMAIN;
 
 if (!serverURL) {
-    console.error("SLACK_SIGNING_SECRET or SLACK_TOKEN env var not set!");
+    console.error("SELF_DOMAIN env var not set!");
     process.exit(1);
 }
 
