@@ -5,23 +5,16 @@ var cookieParser = require("cookie-parser");
 var logger = require("morgan");
 
 var usersRouter = require("./routes/users");
+var botRouter = require("./routes/bot");
 var roomsRouter = require("./routes/rooms");
 var Redis = require("ioredis");
 var JSONCache  = require('redis-json');
-
-
-
-const redisConfig = require("./utils/redisConfig");
+var redisConfig = require("./utils/redisConfig");
 
 const redisClient = new Redis(redisConfig.REDIS_CONF);
 const jsonCache = new JSONCache(redisClient);
 
 var app = express();
-
-app.use(logger("dev"));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
 
 redisClient.on("connect", function () {
   console.log("Connected to redis");
@@ -34,6 +27,7 @@ app.use(function (req, res, next) {
 });
 
 app.use("/api/users", usersRouter);
+app.use("/api/bot", botRouter);
 app.use("/api/rooms", roomsRouter);
 
 
@@ -65,5 +59,10 @@ app.use(function (err, req, res, next) {
   res.status(err.status || 500);
   res.send("error");
 });
+
+app.use(logger("dev"));
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(cookieParser());
 
 module.exports = app;
