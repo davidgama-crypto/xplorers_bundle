@@ -7,24 +7,8 @@ var logger = require("morgan");
 var usersRouter = require("./routes/users");
 var botRouter = require("./routes/bot");
 var roomsRouter = require("./routes/rooms");
-var Redis = require("ioredis");
-var JSONCache  = require('redis-json');
-var redisConfig = require("./utils/redisConfig");
-
-const redisClient = new Redis(redisConfig.REDIS_CONF);
-const jsonCache = new JSONCache(redisClient);
-
 var app = express();
 
-redisClient.on("connect", function () {
-  console.log("Connected to redis");
-});
-
-// add redisClient as a middleware
-app.use(function (req, res, next) {
-  res.redisClient = jsonCache;
-  next();
-});
 
 app.use("/api/users", usersRouter);
 app.use("/api/bot", botRouter);
