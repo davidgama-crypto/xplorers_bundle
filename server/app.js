@@ -4,14 +4,19 @@ var path = require("path");
 var cookieParser = require("cookie-parser");
 var logger = require("morgan");
 
-var indexRouter = require("./routes/index");
 var usersRouter = require("./routes/users");
-var redis = require("redis");
+var roomsRouter = require("./routes/rooms");
+var Redis = require("ioredis");
+var JSONCache  = require('redis-json');
+
+
+
 const redisConfig = require("./utils/redisConfig");
 
-var app = express();
+const redisClient = new Redis(redisConfig.REDIS_CONF);
+const jsonCache = new JSONCache(redisClient);
 
-const redisClient = redis.createClient(redisConfig.REDIS_CONF);
+var app = express();
 
 app.use(logger("dev"));
 app.use(express.json());
@@ -24,11 +29,13 @@ redisClient.on("connect", function () {
 
 // add redisClient as a middleware
 app.use(function (req, res, next) {
-  res.redisClient = redisClient;
+  res.redisClient = jsonCache;
   next();
 });
 
 app.use("/api/users", usersRouter);
+app.use("/api/rooms", roomsRouter);
+
 
 // Serve static files from the React app
 app.use(
