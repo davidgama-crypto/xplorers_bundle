@@ -16,14 +16,18 @@ Response Body:
    "phaseStartTime": 15123123, // unix timestamp in seconds
    "phaseDuration": 30, // in seconds
    "players": {
-   "shin": {
-     "done": false,
-     "connected": true
-   },
-   "david": {
-     "done": true,
-     "connected": true
-   }
+    "aslkdj231sd": { // randomly generated session GUID
+      "displayName": "shin",
+      "selectedAvatar": "pig",
+      "done": false,
+      "connected": true
+    },
+    "aslkasdaf231sd": {
+      "displayName": "david",
+      "selectedAvatar": "human",
+      "done": true,
+      "connected": true
+    }
  },
  "totalScores": [ // ordered array by score
   {
@@ -45,13 +49,13 @@ Response Body:
         "id": 0,
         "finished": true, // is the round done?
         "scoredPoints": {
-          "david": 200, // ex. 100 * number of seconds left
-          "shin": 100,
+          "aslkasdaf231sd": 200, // ex. 100 * number of seconds left
+          "aslkdj231sd": 100,
         },
         "initState": {}, // unique to each game
         "playerState": { // player state relevant to the game round
-          "shin": 1, // how many seconds left on client's timer when press submit
-          "david": 2
+          "aslkdj231sd": 1, // how many seconds left on client's timer when press submit
+          "aslkasdaf231sd": 2
         }
       },
       {
@@ -60,8 +64,8 @@ Response Body:
         "scoredPoints": {},
         "initState": {},
         "playerState": { // player state relevant to the game round
-          "shin": 1, // how many seconds left on client's timer when press submit
-          "david": 2
+          "aslkdj231sd": 1, // how many seconds left on client's timer when press submit
+          "aslkasdaf231sd": 2
         }
       },
     ]
