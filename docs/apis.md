@@ -37,6 +37,37 @@ Response:
 
 ```
 
+```
+PUT /api/rooms/:id
+: Update a room's state
+
+Request:
+
+Headers:
+Authorization: Bearer <JWT> // check if token valid and UID is in the room
+
+Body:
+{
+  "current": { //make sure we are synced
+    "game": 0,
+    "round": 0,
+    "phase": 0,
+    "players": {
+      "aslkdj231sd": { // update done state
+        "done": true
+      }
+    }
+  },
+  "playerState": { // update the player state for current game/round/phase
+    "aslkdj231sd": "asdfa"
+  }
+}
+
+Response:
+{ ... room schema ... }
+
+```
+
 # /api/rooms/:id/users
 
 ```
