@@ -2,9 +2,10 @@ const { nanoid } = require('nanoid');
 const RedisClient = require('../utils/redisClient');
 
 class RoomState {
-  constructor() {
+  constructor(roomId = nanoid()) {
+    this.id = roomId;
     this.state = {
-      id: nanoid(),
+      id: roomId,
       current: {},
       totalScores: [],
       totalGames: 0,
@@ -12,16 +13,11 @@ class RoomState {
     };
   }
 
-  static async findById(roomId) {
-    try {
-      const storeState = await RedisClient.get(roomId);
-      const instance = new RoomState();
-      instance.state = storeState;
-      return instance;
-    } catch (e) {
-      console.error(e);
-      return null;
-    }
+  static async findByRoomId(roomId) {
+    const storeState = await RoomState.dao.get(roomId);
+    const instance = new RoomState(roomId);
+    instance.state = storeState;
+    return instance;
   }
 
   // addPlayerToRoom(player) {}
@@ -40,14 +36,11 @@ class RoomState {
 
   async save() {
     const key = this.state.id;
-    try {
-      await RedisClient.set(key, this.state);
-      return this;
-    } catch (e) {
-      console.error(e);
-      return null;
-    }
+    await RoomState.dao.set(key, this.state);
+    return this;
   }
 }
+
+RoomState.dao = RedisClient;
 
 module.exports = RoomState;
