@@ -39,6 +39,7 @@ Response Body:
    "score": 50
   }
  ],
+ "totalGames": 0,
  "gameData": [
   {
     "type": "test",
