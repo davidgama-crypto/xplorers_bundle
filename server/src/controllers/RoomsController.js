@@ -14,14 +14,12 @@ class RoomsController {
   }
 
   static async getRoomById(roomId) {
-    console.log(`getting key ${roomId}`);
-    // https://www.npmjs.com/package/redis-json
-    return GameRoom.findById(roomId);
+    return GameRoom.findByRoomId(roomId);
   }
 
   static async createNewPlayerForRoom(room, displayName, avatar) {
     const newPlayer = new Player(displayName, avatar);
-    room.addPlayer(newPlayer);
+    room.addPlayerToRoom(newPlayer);
     await room.save();
     return newPlayer;
   }

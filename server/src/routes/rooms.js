@@ -24,17 +24,22 @@ router.get('/:id', async (req, res) => {
 // Update a specific room's state
 
 // Player joins/rejoins the room
-router.post('/:id/players', async (req, res) => {
-  const { displayName, avatar } = req.body;
-  const { id } = req.params;
-  if (!displayName || !avatar) {
-    res.status(400).send({
-      error: 'Missing displayName or avatar',
-    });
+router.post('/:id/players', async (req, res, next) => {
+  try {
+    const { displayName, avatar } = req.body;
+    const { id } = req.params;
+    if (!displayName || !avatar) {
+      res.status(400).send({
+        error: 'Missing displayName or avatar',
+      });
+      return;
+    }
+    const room = await RoomsController.getRoomById(id);
+    const player = await RoomsController.createNewPlayerForRoom(room, displayName, avatar);
+    res.send(player);
+  } catch (err) {
+    next(err);
   }
-  const room = await RoomsController.getRoomById(id);
-  const player = await RoomsController.createNewPlayerForRoom(room, displayName, avatar);
-  res.send(player);
 });
 
 // Player changes their ready state, display name, or avatar
