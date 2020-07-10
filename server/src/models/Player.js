@@ -10,8 +10,8 @@ class Player {
     this.avatar = avatar;
     this.done = false;
     this.connected = true;
-    this.token = jwt.sign({ id: this.id }, secretKey);
     this.ready = false;
+    this.token = jwt.sign({ id: this.id }, secretKey);
   }
 }
 

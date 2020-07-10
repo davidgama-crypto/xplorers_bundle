@@ -41,6 +41,9 @@ describe('GameRoom', () => {
     expected[player.id] = player;
 
     expect(room.state.current.players).toStrictEqual(expected);
+    expect(room.state.current.players[player.id].done).toBe(false);
+    expect(room.state.current.players[player.id].connected).toBe(true);
+
     expect(room.playerInRoom(player)).toBe(true);
     expect(room.getTotalNumberOfPlayers()).toBe(1);
 

@@ -17,7 +17,8 @@ Response:
 Body:
 
 {
-  "url": "https://bundle.app/rooms/123"
+  "roomId": "A07j3KVybASMO1bkBavOv",
+  "url": "http://localhost:3005/rooms/A07j3KVybASMO1bkBavOv"
 }
 
 ```
@@ -90,7 +91,33 @@ Body:
   "token": "asdlkjlkjasda.asdgasd.asd.."
   "displayName": "DefaultName",
   "avatar": "pig",
-  "ready": false
+  "ready": false,
+  "connected": "true",
+  "done": "false"
+}
+
+=> this should also add the UID to room state with user info
+=> updates to room state should trigger socket IO push with new room state to client
+
+```
+
+```
+GET /api/rooms/:id/players
+
+: Get player info in a room
+
+Request:
+
+Response:
+Body:
+
+{
+  "uid": "rasdlkjglkj1l23jlksdjl",  // cache payload in localstorage
+  "displayName": "DefaultName",
+  "avatar": "pig",
+  "ready": false,
+  "connected": "true",
+  "done": "false"
 }
 
 => this should also add the UID to room state with user info

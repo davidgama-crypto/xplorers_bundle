@@ -11,8 +11,8 @@ if (!serverURL) {
 
 // Create a new room
 router.get('/', async (req, res) => {
-  const url = await RoomsController.generateRoomUrl(serverURL);
-  res.send({ url });
+  const roomInfo = await RoomsController.generateRoom(serverURL);
+  res.send(roomInfo);
 });
 
 // Get the a specific room's state
@@ -39,6 +39,18 @@ router.post('/:id/players', async (req, res, next) => {
     res.send(player);
   } catch (err) {
     next(err);
+  }
+});
+
+router.get('/:roomId/players/:playerId', async (req, res, next) => {
+  try {
+    const { roomId, playerId } = req.params;
+
+    const playerInfo = await RoomsController.getPlayerInRoom(roomId, playerId);
+    delete playerInfo.token;
+    res.send(playerInfo);
+  } catch (e) {
+    next(e);
   }
 });
 
