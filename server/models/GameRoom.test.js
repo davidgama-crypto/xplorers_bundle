@@ -31,7 +31,7 @@ describe('GameRoom', () => {
   });
 
   it('can add / remove players', async () => {
-    const player = new Player();
+    const player = new Player('test1', 'pig');
 
     expect(room.playerInRoom(player)).toBe(false);
 
@@ -87,12 +87,12 @@ describe('GameRoom', () => {
   it('throws when invoking next without adding 2 players', () => {
     expect(() => room.next()).toThrow('Need at least 2 players in room, cannot call next()');
 
-    p1 = new Player();
+    p1 = new Player('test1', 'pig');
     room.addPlayerToRoom(p1);
 
     expect(() => room.next()).toThrow('Need at least 2 players in room, cannot call next()');
 
-    p2 = new Player();
+    p2 = new Player('test2', 'pig');
     room.addPlayerToRoom(p2);
   });
 

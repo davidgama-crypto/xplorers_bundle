@@ -11,23 +11,34 @@ if (!serverURL) {
 
 // Create a new room
 router.get('/', async (req, res) => {
-  const roomId = await RoomsController.generateRoomUrl();
-  const url = `${serverURL}/${roomId}`;
+  const url = await RoomsController.generateRoomUrl(serverURL);
   res.send({ url });
 });
 
 // Get the a specific room's state
 router.get('/:id', async (req, res) => {
-  const room = await RoomsController.getRoom(req.params.id);
+  const room = await RoomsController.getRoomById(req.params.id);
   res.send(room);
 });
 
 // Update a specific room's state
 
-// User joins/rejoins the room
+// Player joins/rejoins the room
+router.post('/:id/players', async (req, res) => {
+  const { displayName, avatar } = req.body;
+  const { id } = req.params;
+  if (!displayName || !avatar) {
+    res.status(400).send({
+      error: 'Missing displayName or avatar',
+    });
+  }
+  const room = await RoomsController.getRoomById(id);
+  const player = await RoomsController.createNewPlayerForRoom(room, displayName, avatar);
+  res.send(player);
+});
 
-// User changes their ready state, display name, or avatar
+// Player changes their ready state, display name, or avatar
 
-// User leaves the room
+// Player leaves the room
 
 module.exports = router;

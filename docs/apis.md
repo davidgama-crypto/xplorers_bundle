@@ -68,10 +68,10 @@ Response:
 
 ```
 
-# /api/rooms/:id/users
+# /api/rooms/:id/players
 
 ```
-POST /api/rooms/:id/users
+POST /api/rooms/:id/players
 
 : User joins/rejoins the room, get JWT with UID
 
@@ -80,7 +80,6 @@ Body:
 {
   "displayName": "DefaultName", // fetch from localstorage cache
   "avatar": "pig",
-  "ready": false
 }
 
 Response:
@@ -100,7 +99,7 @@ Body:
 ```
 
 ```
-PUT /api/rooms/:id/users/:uid
+PUT /api/rooms/:id/players/:uid
 : User changes ready state, display name, or avatar
 Request:
 

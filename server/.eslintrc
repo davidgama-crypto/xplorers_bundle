@@ -10,5 +10,7 @@
     "sourceType": "script"
   },
   "plugins": ["jest"],
-  "rules": {}
+  "rules": {
+      "consistent-return": "off"
+  }
 }
