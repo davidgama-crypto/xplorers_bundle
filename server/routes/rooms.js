@@ -11,15 +11,15 @@ if (!serverURL) {
 
 // Create a new room
 router.get('/', async (req, res) => {
-  const roomId = await RoomsController.generateRoom();
+  const roomId = await RoomsController.generateRoomUrl();
   const url = `${serverURL}/${roomId}`;
-  res.json({ url });
+  res.send({ url });
 });
 
 // Get the a specific room's state
 router.get('/:id', async (req, res) => {
-  const roomId = await RoomsController.getRoom(req.params.id);
-  res.json(roomId);
+  const room = await RoomsController.getRoom(req.params.id);
+  res.send(room);
 });
 
 // Update a specific room's state
