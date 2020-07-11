@@ -1,14 +1,31 @@
-# APIs
+# API Design
 
-Docs for Backend APIs
+Docs for Backend API Design
 
-# /api/bot
+
+# Use Cases
+
+- [x] Creating a new game room
+- [x] Adding a new player to a game room
+- [x] Players can update their player information in a room
+- [x] Players can update their game state in a room
+- [x] Players can toggle their status for "ready to play"
+- [x] First player to join the room becomes Host of the room
+- [x] Host can update game settings like which games to play
+- [ ] When all players are "ready" the game starts automatically by updating game room state and players
+- [ ] When player is disconnected a player is removed from the game room
+- [ ] When game state is updated by the server or other players, all players are notified dynamically
+- [ ] When the last player is "done" with the current phase, the game state is progressed automatically to the next phase for all players simultaneously
+
 
 # /api/rooms
 
 ```
 GET /api/rooms
-: Create a new room
+
+Description:
+
+Create a new room
 
 Request:
 
@@ -17,14 +34,20 @@ Response:
 Body:
 
 {
-  "url": "https://bundle.app/rooms/123"
+  "roomId": "A07j3KVybASMO1bkBavOv",
+  "url": "http://localhost:3005/rooms/A07j3KVybASMO1bkBavOv"
 }
 
 ```
 
+# /api/rooms/:roomId
+
 ```
-GET /api/rooms/:id
-: Get the current room's state
+GET /api/rooms/:roomId
+
+Description:
+
+Get the current room's state
 
 Request:
 
@@ -38,8 +61,14 @@ Response:
 ```
 
 ```
-PUT /api/rooms/:id
-: Update a room's state
+PUT /api/rooms/:roomId
+
+Description: 
+
+Update a game room's state. 
+If host, can update the types of games selected for play
+If player, can update their playerState
+
 
 Request:
 
@@ -48,16 +77,6 @@ Authorization: Bearer <JWT> // check if token valid and UID is in the room
 
 Body:
 {
-  "current": { //make sure we are synced
-    "game": 0,
-    "round": 0,
-    "phase": 0,
-    "players": {
-      "aslkdj231sd": { // update done state
-        "done": true
-      }
-    }
-  },
   "playerState": { // update the player state for current game/round/phase
     "aslkdj231sd": "asdfa"
   }
@@ -68,19 +87,52 @@ Response:
 
 ```
 
-# /api/rooms/:id/users
+# /api/rooms/:roomId/games
 
 ```
-POST /api/rooms/:id/users
+PUT /api/rooms/:roomId/games
 
-: User joins/rejoins the room, get JWT with UID
+Description:
+
+Update the room's selected games. Must be host of the room.
+
+Request:
+Headers:
+Authorization: Bearer <JWT>
+Body:
+{
+  "games": [
+    {
+      "type": "test",
+      "rounds": 1
+    }
+  ]
+}
+
+
+Response:
+Body:
+{... room schema ...}
+
+```
+
+
+
+# /api/rooms/:roomId/players
+
+```
+POST /api/rooms/:roomId/players
+
+
+Description:
+
+player joins/rejoins the room, get JWT with UID
 
 Request:
 Body:
 {
   "displayName": "DefaultName", // fetch from localstorage cache
   "avatar": "pig",
-  "ready": false
 }
 
 Response:
@@ -91,27 +143,65 @@ Body:
   "token": "asdlkjlkjasda.asdgasd.asd.."
   "displayName": "DefaultName",
   "avatar": "pig",
-  "ready": false
+  "ready": false,
+  "connected": "true",
+  "done": "false"
 }
 
-=> this should also add the UID to room state with user info
-=> updates to room state should trigger socket IO push with new room state to client
+Notes:
+
+- this should also add the UID to room state with player info
+- updates to room state should trigger socket IO push with new room state to client
+
+```
+
+# /api/rooms/:roomId/players/:playerId
+
+```
+GET /api/rooms/:roomId/players/:playerId
+
+Description:
+
+Get info about player in a room
+
+Request:
+Header:
+Authorization: Bearer <JWT>
+
+Response:
+Status: 200
+Body:
+
+{
+    "id": "SvqUL_5PthfjvcIy-kkWC",
+    "displayName": "shin",
+    "avatar": "human",
+    "done": true,
+    "connected": true,
+    "ready": false
+}
+
 
 ```
 
 ```
-PUT /api/rooms/:id/users/:uid
-: User changes ready state, display name, or avatar
+PUT /api/rooms/:roomId/players/:playerId
+
+Description:
+
+  player changes ready state, display name, or avatar
+
 Request:
 
 Headers:
-Authorization: Bearer <JWT> // check valid token also check if UID is in the room
+Authorization: Bearer <JWT> // check valid token also check if playerId is in the room
 
 Body:
 {
   "displayName": "shin",
   "avatar": "human",
   "ready": true,
+  "done": false,
 }
 
 Response:
@@ -120,27 +210,36 @@ Status: 200
 Body:
 
 {
-  "displayName": "shin",
-  "avatar": "human",
-  "ready": true,
+    "id": "SvqUL_5PthfjvcIy-kkWC",
+    "displayName": "shin",
+    "avatar": "human",
+    "done": true,
+    "connected": true,
+    "ready": false
 }
 
+Notes:
 
-=> this should also add the UID to room state with user info
-=> updates to room state should trigger socket IO push with new room state to client
+- this should also add the UID to room state with player info
+- updates to room state should trigger socket IO push with new room state to client
 
 
 ```
 
 ```
-: User leaves the room
+
+Description:
+
+player leaves the room
 
 -> this should be handled via socket io close/disconnect event handler
--> remove the uid and user data from the room
+-> remove the uid and player data from the room
 
 
-=> this should also remove the UID to room state with user info
-=> updates to room state should trigger socket IO push with new room state to client
+Notes:
+
+- this should also remove the UID to room state with player info
+- updates to room state should trigger socket IO push with new room state to client
 
 
 ```
