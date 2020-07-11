@@ -1,7 +1,7 @@
 const { nanoid } = require('nanoid');
 const jwt = require('jsonwebtoken');
 
-const secretKey = 'secret';
+const { JWT_SECRET } = require('../utils/constants');
 
 class Player {
   constructor(displayName, avatar) {
@@ -11,7 +11,7 @@ class Player {
     this.done = false;
     this.connected = true;
     this.ready = false;
-    this.token = jwt.sign({ id: this.id }, secretKey);
+    this.token = jwt.sign({ id: this.id }, JWT_SECRET);
   }
 }
 

@@ -1,5 +1,8 @@
 const GameRoom = require('../models/GameRoom');
 const Player = require('../models/Player');
+const BadOperationError = require('../errors/BadOperationError');
+const MissingResourceError = require('../errors/MissingResourceError');
+const Game = require('../models/Game');
 
 class RoomsController {
   static async generateRoom(serverUrl) {
@@ -25,12 +28,12 @@ class RoomsController {
   static async getPlayerInRoom(roomId, playerId) {
     const room = await GameRoom.findByRoomId(roomId);
     const player = room.getPlayer(playerId);
-    if (player === undefined) throw new Error(`playerId=${playerId} not in roomId=${roomId}`);
+    if (player === undefined) throw new MissingResourceError(`playerId=${playerId} not in roomId=${roomId}`);
     return player;
   }
 
-  static async updatePlayerInRoom(room, playerId, playerInfo) {
-    if (!room.playerInRoom(playerId)) throw new Error(`playerId=${playerId} doesn't existing in room`);
+  static updatePlayerInfoInRoom(room, playerId, playerInfo) {
+    if (!room.playerInRoom(playerId)) throw new MissingResourceError(`playerId=${playerId} doesn't existing in room`);
 
     const oldState = room.getPlayer(playerId);
     const newState = {
@@ -39,6 +42,13 @@ class RoomsController {
     };
     room.addPlayerToRoom(playerId, newState);
     return newState;
+  }
+
+  static async updatePlayerStateInRoom(roomId, playerId, playerState) {
+    const room = await GameRoom.findByRoomId(roomId);
+    room.setPlayerStateForCurrentGame(playerId, playerState);
+    const updatedRoom = await room.save();
+    return updatedRoom;
   }
 }
 

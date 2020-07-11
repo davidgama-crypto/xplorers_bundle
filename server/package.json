@@ -5,7 +5,7 @@
   "scripts": {
     "start": "node main.js",
     "dev": "nodemon main.js",
-    "test": "jest --forceExit --coverage"
+    "test": "jest --coverage"
   },
   "dependencies": {
     "@slack/events-api": "^2.3.3",
@@ -29,6 +29,7 @@
     "eslint-plugin-import": "^2.22.0",
     "eslint-plugin-jest": "^23.18.0",
     "jest": "^26.1.0",
-    "nodemon": "^2.0.4"
+    "nodemon": "^2.0.4",
+    "supertest": "^4.0.2"
   }
 }

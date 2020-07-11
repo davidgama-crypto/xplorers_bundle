@@ -16,6 +16,7 @@ Response Body:
 		"phase": 1,
 		"phaseStartTime": 15123123,
 		"phaseDuration": 30,
+		"host": "aslkdj231sd",
 		"players": {
 			"aslkdj231sd": {
 				"displayName": "shin",

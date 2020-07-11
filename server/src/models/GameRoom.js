@@ -3,6 +3,8 @@ const { nanoid } = require('nanoid');
 // const RedisClient = require('../utils/redisClient');
 const MockCache = require('../utils/MockCache');
 const Game = require('./Game');
+const BadOperationError = require('../errors/BadOperationError');
+const MissingResourceError = require('../errors/MissingResourceError');
 
 class GameRoom {
   constructor(roomId = nanoid()) {
@@ -24,14 +26,24 @@ class GameRoom {
 
   // Get a GameRoom by RoomId
   static async findByRoomId(roomId) {
-    const storeState = await GameRoom.DataStore.get(roomId);
-    const instance = new GameRoom(roomId);
-    instance.state = storeState;
-    return instance;
+    try {
+      const storeState = await GameRoom.DataStore.get(roomId);
+      const instance = new GameRoom(roomId);
+      instance.state = storeState;
+      return instance;
+    } catch (err) {
+      if (err.message.includes("doesn't exist")) throw new MissingResourceError(err.message);
+      throw err;
+    }
   }
 
   addPlayerToRoom(playerId, playerInfo) {
     this.state.current.players[playerId] = playerInfo;
+    if (this.getTotalNumberOfPlayers() === 1) this.state.current.host = playerId;
+  }
+
+  playerIsHost(playerId) {
+    return this.current.host === playerId;
   }
 
   getPlayer(playerId) {
@@ -61,17 +73,20 @@ class GameRoom {
       this.state.gameData.push(game);
       this.state.totalGames = this.state.gameData.length;
     } else {
-      throw new Error(`type=${type} already added to roomId=${this.id}`);
+      throw new BadOperationError(`type=${type} already added to roomId=${this.id}`);
     }
   }
 
   getGameDataForType(type) {
     const idx = this.getGameIndex(type);
-    if (idx < 0) throw new Error(`gameData does not exist for type=${type}`);
+    if (idx < 0) throw new MissingResourceError(`gameData does not exist for type=${type}`);
     return this.state.gameData[idx];
   }
 
   getCurrentGame() {
+    if (this.state.totalGames === 0 || this.state.gameData.length === 0) {
+      throw new BadOperationError(`Cannot getCurrentGame(), no games added to roomId=${this.id}`);
+    }
     return this.state.gameData[this.state.current.game];
   }
 
@@ -101,8 +116,8 @@ class GameRoom {
 
   // Advance the room to next game/round/phase
   next() {
-    if (this.getTotalNumberOfPlayers() < 2) throw new Error('Need at least 2 players in room, cannot call next()');
-    if (this.state.totalGames === 0) throw new Error('No games added to room, cannot call next()');
+    if (this.getTotalNumberOfPlayers() < 2) throw new BadOperationError('Need at least 2 players in room, cannot call next()');
+    if (this.state.totalGames === 0) throw new BadOperationError('No games added to room, cannot call next()');
 
     // get the current game to get the totalRounds, totalPhases
     const currentGame = this.getCurrentGame();
@@ -129,10 +144,12 @@ class GameRoom {
   }
 
   // Given a playerId and state, update the current game/round's player state
-  setPlayerStateForCurrentGame(player, playerState) {
+  setPlayerStateForCurrentGame(playerId, playerState) {
+    if (!this.playerInRoom(playerId)) throw new BadOperationError(`playerId=${playerId} not in roomId=${this.id}`);
+
     const currGame = this.getCurrentGame();
     const currentRound = currGame.rounds[this.state.current.round];
-    currentRound.playerState[player.id] = playerState;
+    currentRound.playerState[playerId] = playerState;
   }
 
   // Check if all current players are ready to proceed to the next game/round/phase

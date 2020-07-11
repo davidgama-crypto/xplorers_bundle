@@ -1,14 +1,30 @@
-# APIs
+# API Design
 
-Docs for Backend APIs
+Docs for Backend API Design
 
-# /api/bot
+
+# Use Cases
+
+- [x] Creating a new game room
+- [x] Adding a new player to a game room
+- [x] Players can update their information in a room
+- [x] Players can toggle their status for "ready to play"
+- [x] First player to join the room becomes Host of the room
+- [ ] Host can update game settings like which games to play
+- [ ] When all players are "ready" the game starts automatically
+- [ ] When player is disconnected a player is removed from the game room
+- [ ] When game state is updated by the server or other players, all players are notified dynamically
+- [ ] When the last player is "done" with the current phase, the game state is progressed automatically to the next phase for all players simultaneously
+
 
 # /api/rooms
 
 ```
 GET /api/rooms
-: Create a new room
+
+Description:
+
+Create a new room
 
 Request:
 
@@ -23,9 +39,14 @@ Body:
 
 ```
 
+# /api/rooms/:roomId
+
 ```
-GET /api/rooms/:id
-: Get the current room's state
+GET /api/rooms/:roomId
+
+Description:
+
+Get the current room's state
 
 Request:
 
@@ -39,8 +60,14 @@ Response:
 ```
 
 ```
-PUT /api/rooms/:id
-: Update a player's game state in the room
+PUT /api/rooms/:roomId
+
+Description: 
+
+Update a game room's state. 
+If host, can update the types of games selected for play
+If player, can update their playerState
+
 
 Request:
 
@@ -59,12 +86,15 @@ Response:
 
 ```
 
-# /api/rooms/:id/players
+# /api/rooms/:roomId/players
 
 ```
-POST /api/rooms/:id/players
+POST /api/rooms/:roomId/players
 
-: User joins/rejoins the room, get JWT with UID
+
+Description:
+
+player joins/rejoins the room, get JWT with UID
 
 Request:
 Body:
@@ -86,42 +116,53 @@ Body:
   "done": "false"
 }
 
-=> this should also add the UID to room state with user info
-=> updates to room state should trigger socket IO push with new room state to client
+Notes:
+
+- this should also add the UID to room state with player info
+- updates to room state should trigger socket IO push with new room state to client
 
 ```
 
-```
-GET /api/rooms/:id/players
+# /api/rooms/:roomId/players/:playerId
 
-: Get player info in a room
+```
+GET /api/rooms/:roomId/players/:playerId
+
+Description:
+
+Get info about player in a room
 
 Request:
+Header:
+Authorization: Bearer <JWT>
 
 Response:
+Status: 200
 Body:
 
 {
-  "uid": "rasdlkjglkj1l23jlksdjl",  // cache payload in localstorage
-  "displayName": "DefaultName",
-  "avatar": "pig",
-  "ready": false,
-  "connected": "true",
-  "done": "false"
+    "id": "SvqUL_5PthfjvcIy-kkWC",
+    "displayName": "shin",
+    "avatar": "human",
+    "done": true,
+    "connected": true,
+    "ready": false
 }
 
-=> this should also add the UID to room state with user info
-=> updates to room state should trigger socket IO push with new room state to client
 
 ```
 
 ```
-PUT /api/rooms/:id/players/:uid
-: User changes ready state, display name, or avatar
+PUT /api/rooms/:roomId/players/:playerId
+
+Description:
+
+  player changes ready state, display name, or avatar
+
 Request:
 
 Headers:
-Authorization: Bearer <JWT> // check valid token also check if UID is in the room
+Authorization: Bearer <JWT> // check valid token also check if playerId is in the room
 
 Body:
 {
@@ -145,22 +186,28 @@ Body:
     "ready": false
 }
 
+Notes:
 
-=> this should also add the UID to room state with user info
-=> updates to room state should trigger socket IO push with new room state to client
+- this should also add the UID to room state with player info
+- updates to room state should trigger socket IO push with new room state to client
 
 
 ```
 
 ```
-: User leaves the room
+
+Description:
+
+player leaves the room
 
 -> this should be handled via socket io close/disconnect event handler
--> remove the uid and user data from the room
+-> remove the uid and player data from the room
 
 
-=> this should also remove the UID to room state with user info
-=> updates to room state should trigger socket IO push with new room state to client
+Notes:
+
+- this should also remove the UID to room state with player info
+- updates to room state should trigger socket IO push with new room state to client
 
 
 ```
