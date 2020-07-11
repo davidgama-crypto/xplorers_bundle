@@ -30,27 +30,26 @@ describe('GameRoom', () => {
     await expect(shouldThrow()).rejects.toThrow(Error);
   });
 
-  it('can add / remove players', async () => {
+  it('can add / get / remove players', async () => {
     const player = new Player('test1', 'pig');
 
-    expect(room.playerInRoom(player)).toBe(false);
+    expect(room.playerInRoom(player.id)).toBe(false);
 
-    room.addPlayerToRoom(player);
+    room.addPlayerToRoom(player.id, player);
 
-    const expected = {};
-    expected[player.id] = player;
+    expect(room.playerInRoom(player.id)).toBe(true);
+    expect(room.getTotalNumberOfPlayers()).toBe(1);
 
-    expect(room.state.current.players).toStrictEqual(expected);
     expect(room.state.current.players[player.id].done).toBe(false);
     expect(room.state.current.players[player.id].connected).toBe(true);
 
-    expect(room.playerInRoom(player)).toBe(true);
-    expect(room.getTotalNumberOfPlayers()).toBe(1);
+    const gotPlayer = room.getPlayer(player.id);
+    expect(gotPlayer).toStrictEqual(player);
 
-    room.removePlayerFromRoom(player);
+    room.removePlayerFromRoom(player.id);
     expect(room.state.current.players).toStrictEqual({});
     expect(room.getTotalNumberOfPlayers()).toBe(0);
-    expect(room.playerInRoom(player)).toBe(false);
+    expect(room.playerInRoom(player.id)).toBe(false);
   });
 
   it('can add a game of type test', async () => {
@@ -91,12 +90,12 @@ describe('GameRoom', () => {
     expect(() => room.next()).toThrow('Need at least 2 players in room, cannot call next()');
 
     p1 = new Player('test1', 'pig');
-    room.addPlayerToRoom(p1);
+    room.addPlayerToRoom(p1.id, p1);
 
     expect(() => room.next()).toThrow('Need at least 2 players in room, cannot call next()');
 
     p2 = new Player('test2', 'pig');
-    room.addPlayerToRoom(p2);
+    room.addPlayerToRoom(p2.id, p2);
   });
 
   it('throws when invoking next without adding a game', () => {

@@ -40,7 +40,7 @@ Response:
 
 ```
 PUT /api/rooms/:id
-: Update a room's state
+: Update a player's game state in the room
 
 Request:
 
@@ -49,16 +49,6 @@ Authorization: Bearer <JWT> // check if token valid and UID is in the room
 
 Body:
 {
-  "current": { //make sure we are synced
-    "game": 0,
-    "round": 0,
-    "phase": 0,
-    "players": {
-      "aslkdj231sd": { // update done state
-        "done": true
-      }
-    }
-  },
   "playerState": { // update the player state for current game/round/phase
     "aslkdj231sd": "asdfa"
   }
@@ -138,6 +128,7 @@ Body:
   "displayName": "shin",
   "avatar": "human",
   "ready": true,
+  "done": false,
 }
 
 Response:
@@ -146,9 +137,12 @@ Status: 200
 Body:
 
 {
-  "displayName": "shin",
-  "avatar": "human",
-  "ready": true,
+    "id": "SvqUL_5PthfjvcIy-kkWC",
+    "displayName": "shin",
+    "avatar": "human",
+    "done": true,
+    "connected": true,
+    "ready": false
 }
 
 

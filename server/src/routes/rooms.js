@@ -54,6 +54,17 @@ router.get('/:roomId/players/:playerId', async (req, res, next) => {
   }
 });
 
+router.put('/:roomId/players/:playerId', async (req, res, next) => {
+  try {
+    const { roomId, playerId } = req.params;
+    const room = await RoomsController.getRoomById(roomId);
+    const newState = RoomsController.updatePlayerInRoom(room, playerId, req.body);
+    res.send(newState);
+  } catch (err) {
+    next(err);
+  }
+});
+
 // Player changes their ready state, display name, or avatar
 
 // Player leaves the room

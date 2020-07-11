@@ -17,16 +17,28 @@ class RoomsController {
 
   static async createNewPlayerForRoom(room, displayName, avatar) {
     const newPlayer = new Player(displayName, avatar);
-    room.addPlayerToRoom(newPlayer);
+    room.addPlayerToRoom(newPlayer.id, newPlayer);
     await room.save();
     return newPlayer;
   }
 
   static async getPlayerInRoom(roomId, playerId) {
     const room = await GameRoom.findByRoomId(roomId);
-    const player = room.state.current.players[playerId];
-    if (!player) throw new Error(`playerId=${playerId} not in roomId=${roomId}`);
+    const player = room.getPlayer(playerId);
+    if (player === undefined) throw new Error(`playerId=${playerId} not in roomId=${roomId}`);
     return player;
+  }
+
+  static async updatePlayerInRoom(room, playerId, playerInfo) {
+    if (!room.playerInRoom(playerId)) throw new Error(`playerId=${playerId} doesn't existing in room`);
+
+    const oldState = room.getPlayer(playerId);
+    const newState = {
+      ...oldState,
+      ...playerInfo,
+    };
+    room.addPlayerToRoom(playerId, newState);
+    return newState;
   }
 }
 

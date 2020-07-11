@@ -1,5 +1,7 @@
 const { nanoid } = require('nanoid');
-const RedisClient = require('../utils/redisClient');
+// problems with the redis library
+// const RedisClient = require('../utils/redisClient');
+const MockCache = require('../utils/MockCache');
 const Game = require('./Game');
 
 class GameRoom {
@@ -28,16 +30,20 @@ class GameRoom {
     return instance;
   }
 
-  addPlayerToRoom(player) {
-    this.state.current.players[player.id] = player;
+  addPlayerToRoom(playerId, playerInfo) {
+    this.state.current.players[playerId] = playerInfo;
   }
 
-  removePlayerFromRoom(player) {
-    delete this.state.current.players[player.id];
+  getPlayer(playerId) {
+    return this.state.current.players[playerId];
   }
 
-  playerInRoom(player) {
-    return this.state.current.players[player.id] !== undefined;
+  removePlayerFromRoom(playerId) {
+    delete this.state.current.players[playerId];
+  }
+
+  playerInRoom(playerId) {
+    return this.state.current.players[playerId] !== undefined;
   }
 
   getGameIndex(type) {
@@ -145,6 +151,7 @@ class GameRoom {
   }
 }
 
-GameRoom.DataStore = RedisClient;
+// TODO: Replace with something else
+GameRoom.DataStore = new MockCache();
 
 module.exports = GameRoom;
