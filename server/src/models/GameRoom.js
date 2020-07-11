@@ -43,7 +43,7 @@ class GameRoom {
   }
 
   playerIsHost(playerId) {
-    return this.current.host === playerId;
+    return this.state.current.host === playerId;
   }
 
   getPlayer(playerId) {

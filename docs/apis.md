@@ -7,10 +7,11 @@ Docs for Backend API Design
 
 - [x] Creating a new game room
 - [x] Adding a new player to a game room
-- [x] Players can update their information in a room
+- [x] Players can update their player information in a room
+- [x] Players can update their game state in a room
 - [x] Players can toggle their status for "ready to play"
 - [x] First player to join the room becomes Host of the room
-- [ ] Host can update game settings like which games to play
+- [x] Host can update game settings like which games to play
 - [ ] When all players are "ready" the game starts automatically
 - [ ] When player is disconnected a player is removed from the game room
 - [ ] When game state is updated by the server or other players, all players are notified dynamically
@@ -85,6 +86,37 @@ Response:
 { ... room schema ... }
 
 ```
+
+# /api/rooms/:roomId/games
+
+```
+PUT /api/rooms/:roomId/games
+
+Description:
+
+Update the room's selected games. Must be host of the room.
+
+Request:
+Headers:
+Authorization: Bearer <JWT>
+Body:
+{
+  "games": [
+    {
+      "type": "test",
+      "rounds": 1
+    }
+  ]
+}
+
+
+Response:
+Body:
+{... room schema ...}
+
+```
+
+
 
 # /api/rooms/:roomId/players
 

@@ -1,8 +1,7 @@
 const GameRoom = require('../models/GameRoom');
 const Player = require('../models/Player');
-const BadOperationError = require('../errors/BadOperationError');
 const MissingResourceError = require('../errors/MissingResourceError');
-const Game = require('../models/Game');
+const NotPermittedError = require('../errors/NotPermittedError');
 
 class RoomsController {
   static async generateRoom(serverUrl) {
@@ -32,7 +31,7 @@ class RoomsController {
     return player;
   }
 
-  static updatePlayerInfoInRoom(room, playerId, playerInfo) {
+  static async updatePlayerInfoInRoom(room, playerId, playerInfo) {
     if (!room.playerInRoom(playerId)) throw new MissingResourceError(`playerId=${playerId} doesn't existing in room`);
 
     const oldState = room.getPlayer(playerId);
@@ -41,12 +40,21 @@ class RoomsController {
       ...playerInfo,
     };
     room.addPlayerToRoom(playerId, newState);
+    await room.save();
     return newState;
   }
 
   static async updatePlayerStateInRoom(roomId, playerId, playerState) {
     const room = await GameRoom.findByRoomId(roomId);
-    room.setPlayerStateForCurrentGame(playerId, playerState);
+    room.setPlayerStateForCurrentGame(playerId, playerState[playerId]);
+    const updatedRoom = await room.save();
+    return updatedRoom;
+  }
+
+  static async updateRoomGames(roomId, playerId, gamesToAdd) {
+    const room = await GameRoom.findByRoomId(roomId);
+    if (!room.playerIsHost(playerId)) throw new NotPermittedError(`playerId=${playerId} is not host of roomId=${roomId}`);
+    gamesToAdd.forEach((e) => room.addGame(e.type, e.rounds));
     const updatedRoom = await room.save();
     return updatedRoom;
   }

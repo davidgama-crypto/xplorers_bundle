@@ -170,11 +170,63 @@ describe('rooms API', () => {
     request
       .put(`/api/rooms/${createdRoomId}`)
       .set('Authorization', `Bearer ${createdPlayer1Token}`)
+      .send({
+        playerState: {},
+      })
       .expect(400)
       .end(doneCb);
   });
 
+  // can add a game to an existing room if host
+  it('can add a game to an existing room if host', (doneCb) => {
+    request
+      .put(`/api/rooms/${createdRoomId}/games`)
+      .set('Authorization', `Bearer ${createdPlayer1Token}`)
+      .send({
+        games: [
+          {
+            type: 'test',
+            rounds: 1,
+          },
+        ],
+      })
+      .expect(200)
+      .expect((res) => {
+        const { id, totalGames, gameData } = res.body;
+        expect(id).toBe(createdRoomId);
+        expect(totalGames).toBe(1);
+        expect(gameData).toBeDefined();
+        expect(gameData.length).toBe(1);
+        expect(gameData[0].type).toBe('test');
+        expect(gameData[0].totalRounds).toBe(1);
+      })
+      .end(doneCb);
+  });
+
   // can update a player's state in a game room
+  it('can update a player state in a game room with at least 1 game', (doneCb) => {
+    const expected = {
+      playerState: {},
+    };
+    expected.playerState[createdPlayerId1] = 'sometestvalue';
+
+    request
+      .put(`/api/rooms/${createdRoomId}`)
+      .set('Authorization', `Bearer ${createdPlayer1Token}`)
+      .send(expected)
+      .expect(200)
+      .expect((res) => {
+        const { id, gameData } = res.body;
+        expect(id).toBe(createdRoomId);
+        expect(gameData).toBeDefined();
+        expect(gameData.length).toBe(1);
+        expect(gameData[0].rounds).toBeDefined();
+        expect(gameData[0].rounds.length).toBe(1);
+        expect(gameData[0].rounds[0].playerState).toBeDefined();
+        expect(gameData[0].rounds[0].playerState[createdPlayerId1]).toBe('sometestvalue');
+      })
+      .end(doneCb);
+  });
 
   // can add a game to an existing room if host
 

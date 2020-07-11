@@ -3,6 +3,7 @@ const { verifyJwt } = require('../utils/middleware');
 const RoomsController = require('../controllers/RoomsController');
 const BadOperationError = require('../errors/BadOperationError');
 const MissingResourceError = require('../errors/MissingResourceError');
+const NotPermittedError = require('../errors/NotPermittedError');
 
 const router = express.Router();
 const serverURL = process.env.SELF_DOMAIN;
@@ -52,7 +53,7 @@ router.put('/:roomId', verifyJwt, async (req, res, next) => {
   try {
     const playerId = req.token.id;
     const { roomId } = req.params;
-    const playerState = req.body;
+    const { playerState } = req.body;
 
     const room = await RoomsController.updatePlayerStateInRoom(roomId, playerId, playerState);
     res.send(room.state);
@@ -63,6 +64,32 @@ router.put('/:roomId', verifyJwt, async (req, res, next) => {
         error: err.message,
       });
       return;
+    }
+    next(err);
+  }
+});
+
+// Update the room's selected games. Must be host of the room.
+router.put('/:roomId/games', verifyJwt, async (req, res, next) => {
+  try {
+    const playerId = req.token.id;
+    const { roomId } = req.params;
+    const { games } = req.body;
+    const room = await RoomsController.updateRoomGames(roomId, playerId, games);
+    res.send(room.state);
+  } catch (err) {
+    console.log(err);
+    if (err instanceof NotPermittedError) {
+      res.status(403).send({
+        error: err.message,
+      });
+      return;
+    }
+
+    if (err instanceof MissingResourceError) {
+      res.status(404).send({
+        error: err.message,
+      });
     }
     next(err);
   }
@@ -120,7 +147,7 @@ router.put('/:roomId/players/:playerId', verifyJwt, async (req, res, next) => {
   try {
     const { roomId, playerId } = req.params;
     const room = await RoomsController.getRoomById(roomId);
-    const newState = RoomsController.updatePlayerInfoInRoom(room, playerId, req.body);
+    const newState = await RoomsController.updatePlayerInfoInRoom(room, playerId, req.body);
     res.send(newState);
   } catch (err) {
     console.log(err);
