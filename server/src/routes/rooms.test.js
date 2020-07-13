@@ -7,7 +7,27 @@ const request = supertest(app);
 let createdRoomId;
 let createdPlayerId1;
 let createdPlayer1Token;
+let createdPlayerId2;
+let createdPlayer2Token;
 const validNonPlayerToken = jwt.sign({ id: 'nonexistant' }, JWT_SECRET);
+
+async function finishOneGamePhase() {
+  let res = await request
+    .put(`/api/rooms/${createdRoomId}/players/${createdPlayerId1}`)
+    .set('Authorization', `Bearer ${createdPlayer1Token}`)
+    .send({
+      done: true,
+    });
+  expect(res.status).toBe(200);
+
+  res = await request
+    .put(`/api/rooms/${createdRoomId}/players/${createdPlayerId2}`)
+    .set('Authorization', `Bearer ${createdPlayer2Token}`)
+    .send({
+      done: true,
+    });
+  expect(res.status).toBe(200);
+}
 
 describe('rooms API', () => {
   it('can create a room which returns a roomId and url', (done) => {
@@ -244,5 +264,111 @@ describe('rooms API', () => {
       .end(doneCb);
   });
 
-  // a game room with 2 players all ready=true starts automatically
+  // a game room with 2 players all ready=true sets status=playing automatically
+  it('can add a player to an existing room', async () => {
+    // add a new player
+    let res = await request
+      .post(`/api/rooms/${createdRoomId}/players`)
+      .send({
+        displayName: 'test2',
+        avatar: 'test2',
+      });
+
+    expect(res.status).toBe(200);
+    expect(res.body.id).toBeDefined();
+    expect(res.body.token).toBeDefined();
+    expect(res.body.displayName).toBe('test2');
+    expect(res.body.avatar).toBe('test2');
+    expect(res.body.connected).toBe(true);
+    expect(res.body.done).toBe(false);
+    expect(res.body.ready).toBe(false);
+
+    createdPlayerId2 = res.body.id;
+    createdPlayer2Token = res.body.token;
+
+    // Get the current room state
+    res = await request
+      .get(`/api/rooms/${createdRoomId}`)
+      .set('Authorization', `Bearer ${createdPlayer1Token}`);
+    expect(res.status).toBe(200);
+    expect(res.body.id).toBe(createdRoomId);
+    expect(res.body.current).toBeDefined();
+    expect(res.body.current.status).toBe('waiting');
+
+    // player1 ready
+    res = await request
+      .put(`/api/rooms/${createdRoomId}/players/${createdPlayerId1}`)
+      .set('Authorization', `Bearer ${createdPlayer1Token}`)
+      .send({
+        ready: true,
+      });
+
+    expect(res.status).toBe(200);
+
+    // player2 ready
+    res = await request
+      .put(`/api/rooms/${createdRoomId}/players/${createdPlayerId2}`)
+      .set('Authorization', `Bearer ${createdPlayer2Token}`)
+      .send({
+        ready: true,
+      });
+
+    expect(res.status).toBe(200);
+
+    // room state should now be playing
+    res = await request
+      .get(`/api/rooms/${createdRoomId}`)
+      .set('Authorization', `Bearer ${createdPlayer1Token}`);
+
+    expect(res.status).toBe(200);
+    expect(res.body.id).toBe(createdRoomId);
+    expect(res.body.current).toBeDefined();
+    expect(res.body.current.status).toBe('playing');
+  });
+
+  // updating current players to done progresses game to next phase which is 1
+  it('updating current players to done progresses game to next phase which is 1', async () => {
+    await finishOneGamePhase();
+
+    const res = await request
+      .get(`/api/rooms/${createdRoomId}`)
+      .set('Authorization', `Bearer ${createdPlayer1Token}`);
+
+    expect(res.status).toBe(200);
+    expect(res.body.id).toBe(createdRoomId);
+    expect(res.body.current.game).toBe(0);
+    expect(res.body.current.round).toBe(0);
+    expect(res.body.current.phase).toBe(1);
+    expect(res.body.current.status).toBe('playing');
+  });
+
+  // updating current players to done until last phase (3) finishes the game
+  // updating current players to done progresses game to next phase which is 1
+  it('updating current players to done progresses game to next phase which is 1', async () => {
+    await finishOneGamePhase();
+
+    let res = await request
+      .get(`/api/rooms/${createdRoomId}`)
+      .set('Authorization', `Bearer ${createdPlayer1Token}`);
+
+    expect(res.status).toBe(200);
+    expect(res.body.id).toBe(createdRoomId);
+    expect(res.body.current.game).toBe(0);
+    expect(res.body.current.round).toBe(0);
+    expect(res.body.current.phase).toBe(2);
+    expect(res.body.current.status).toBe('playing');
+
+    await finishOneGamePhase();
+
+    res = await request
+      .get(`/api/rooms/${createdRoomId}`)
+      .set('Authorization', `Bearer ${createdPlayer1Token}`);
+
+    expect(res.status).toBe(200);
+    expect(res.body.id).toBe(createdRoomId);
+    expect(res.body.current.game).toBe(0);
+    expect(res.body.current.round).toBe(0);
+    expect(res.body.current.phase).toBe(0);
+    expect(res.body.current.status).toBe('finished');
+  });
 });

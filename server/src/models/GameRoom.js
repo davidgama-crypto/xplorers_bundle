@@ -11,8 +11,8 @@ class GameRoom {
     this.id = roomId;
     this.state = {
       id: roomId,
-      finished: false,
       current: {
+        status: 'waiting', // waiting, playing, finished
         game: 0,
         round: 0,
         phase: 0,
@@ -43,6 +43,8 @@ class GameRoom {
   }
 
   updatePlayerInfo(playerId, playerInfo) {
+    if (this.gameRoomIsFinished()) throw new BadOperationError(`Cannot update playerId=${playerId} info, roomId=${this.id} is in fininshed state`);
+
     if (!this.playerInRoom(playerId)) throw new BadOperationError(`playerId=${playerId} not in roomId=${this.id}`);
     if (playerInfo === undefined) throw new BadOperationError('playerState is undefined');
     const { ready } = playerInfo;
@@ -52,6 +54,20 @@ class GameRoom {
     }
 
     this.state.current.players[playerId] = playerInfo;
+
+    if (this.gameRoomIsWaiting() && this.allPlayersReady()) this.setGameRoomStatus('playing');
+
+    if (this.gameRoomIsPlaying() && this.allPlayersDoneWithPhase()) {
+      this.next();
+      this.resetPlayersDone();
+    }
+  }
+
+  resetPlayersDone() {
+    const playerIds = Object.keys(this.state.current.players);
+    playerIds.forEach((id) => {
+      this.state.current.players[id].done = false;
+    });
   }
 
   playerIsHost(playerId) {
@@ -136,23 +152,41 @@ class GameRoom {
     const { phase, round, game } = this.state.current;
     const { totalGames } = this.state;
     const { totalPhases, totalRounds } = currentGame;
-    // increment the current phase and modulo with totalPhase
+    // increment the current phase
+    // check if each number satisfies condition for incrementing next number
     const nextPhase = phase + 1;
-    // if 0, then increment currentRound and modulo
     const nextRound = nextPhase === totalPhases ? round + 1 : round;
-    // if 0, then increment currentGame and modulo
     const nextGame = nextRound === totalRounds ? game + 1 : game;
-    // if 0, game finished
-    const finished = nextGame === totalGames;
+    const nextStatus = nextGame === totalGames ? 'finished' : this.getCurrentRoomStatus();
 
+    // modulo with limits
     this.state.current.game = nextGame % totalGames;
     this.state.current.round = nextRound % totalRounds;
     this.state.current.phase = nextPhase % totalPhases;
-    this.state.finished = finished;
+    this.setGameRoomStatus(nextStatus);
+  }
+
+  setGameRoomStatus(status) {
+    if (status !== 'waiting' && status !== 'playing' && status !== 'finished') {
+      throw new BadOperationError(`Unsupport room status=${status} for roomId=${this.id}`);
+    }
+    this.state.current.status = status;
+  }
+
+  getCurrentRoomStatus() {
+    return this.state.current.status;
+  }
+
+  gameRoomIsWaiting() {
+    return this.state.current.status === 'waiting';
+  }
+
+  gameRoomIsPlaying() {
+    return this.state.current.status === 'playing';
   }
 
   gameRoomIsFinished() {
-    return this.state.finished;
+    return this.state.current.status === 'finished';
   }
 
   // Given a playerId and state, update the current game/round's player state
@@ -170,6 +204,12 @@ class GameRoom {
   allPlayersDoneWithPhase() {
     const playerEntries = Object.entries(this.state.current.players);
     const found = playerEntries.find((e) => e[1].done === false);
+    return found === undefined;
+  }
+
+  allPlayersReady() {
+    const playerEntries = Object.entries(this.state.current.players);
+    const found = playerEntries.find((e) => e[1].ready === false);
     return found === undefined;
   }
 
