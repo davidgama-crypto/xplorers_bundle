@@ -17,7 +17,8 @@ class RoomsController {
     return GameRoom.findByRoomId(roomId);
   }
 
-  static async createNewPlayerForRoom(room, displayName, avatar) {
+  static async createNewPlayerForRoom(roomId, displayName, avatar) {
+    const room = await RoomsController.getRoomById(roomId);
     const newPlayer = new Player(displayName, avatar);
     room.addPlayerToRoom(newPlayer.id, newPlayer);
     await room.save();
@@ -39,7 +40,7 @@ class RoomsController {
       ...oldState,
       ...playerInfo,
     };
-    room.addPlayerToRoom(playerId, newState);
+    room.updatePlayerInfo(playerId, newState);
     await room.save();
     return newState;
   }

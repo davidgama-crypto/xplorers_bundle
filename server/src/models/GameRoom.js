@@ -42,6 +42,18 @@ class GameRoom {
     if (this.getTotalNumberOfPlayers() === 1) this.state.current.host = playerId;
   }
 
+  updatePlayerInfo(playerId, playerInfo) {
+    if (!this.playerInRoom(playerId)) throw new BadOperationError(`playerId=${playerId} not in roomId=${this.id}`);
+    if (playerInfo === undefined) throw new BadOperationError('playerState is undefined');
+    const { ready } = playerInfo;
+
+    if (ready !== undefined && ready === true && this.getTotalNumberOfPlayers() === 1) {
+      throw new BadOperationError(`playerId=${playerId} cannot ready when only 1 player in roomId=${this.id}`);
+    }
+
+    this.state.current.players[playerId] = playerInfo;
+  }
+
   playerIsHost(playerId) {
     return this.state.current.host === playerId;
   }
@@ -145,6 +157,8 @@ class GameRoom {
 
   // Given a playerId and state, update the current game/round's player state
   setPlayerStateForCurrentGame(playerId, playerState) {
+    if (playerState === undefined) throw new BadOperationError(`playerId=${playerId} tried to update playerState with undefined state`);
+    if (this.state.totalGames === 0) throw new BadOperationError(`playerId=${playerId} tried to update playerState with no games setup`);
     if (!this.playerInRoom(playerId)) throw new BadOperationError(`playerId=${playerId} not in roomId=${this.id}`);
 
     const currGame = this.getCurrentGame();

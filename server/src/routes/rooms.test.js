@@ -99,16 +99,15 @@ describe('rooms API', () => {
     request
       .put(`/api/rooms/${createdRoomId}/players/${createdPlayerId1}`)
       .send({
-        ready: true,
-        done: true,
+        displayName: 'test2',
       })
       .set('Authorization', `Bearer ${createdPlayer1Token}`)
       .expect(200)
       .expect((res) => {
         const { id, ready, done } = res.body;
         expect(id).toBe(createdPlayerId1);
-        expect(ready).toBe(true);
-        expect(done).toBe(true);
+        expect(ready).toBe(false);
+        expect(done).toBe(false);
       })
       .end(doneCb);
   });
@@ -117,10 +116,20 @@ describe('rooms API', () => {
     request
       .put(`/api/rooms/${createdRoomId}/players/${createdPlayerId1}`)
       .send({
-        ready: true,
-        done: true,
+        displayName: 'test2',
       })
       .expect(401)
+      .end(doneCb);
+  });
+
+  it('updating player status to ready when only 1 player is in the room results in 400', (doneCb) => {
+    request
+      .put(`/api/rooms/${createdRoomId}/players/${createdPlayerId1}`)
+      .set('Authorization', `Bearer ${createdPlayer1Token}`)
+      .send({
+        ready: true,
+      })
+      .expect(400)
       .end(doneCb);
   });
 
@@ -167,13 +176,20 @@ describe('rooms API', () => {
   });
 
   it('trying to update player state on room with no games setup results in 400', (doneCb) => {
+    const payload = {};
+    payload[createdPlayerId1] = {};
     request
       .put(`/api/rooms/${createdRoomId}`)
       .set('Authorization', `Bearer ${createdPlayer1Token}`)
       .send({
-        playerState: {},
+        playerState: payload,
       })
       .expect(400)
+      .expect((res) => {
+        expect(res.body).toStrictEqual({
+          error: `playerId=${createdPlayerId1} tried to update playerState with no games setup`,
+        });
+      })
       .end(doneCb);
   });
 
@@ -227,10 +243,6 @@ describe('rooms API', () => {
       })
       .end(doneCb);
   });
-
-  // can add a game to an existing room if host
-
-  // trying to start a game room with only 1 player results in 400
 
   // a game room with 2 players all ready=true starts automatically
 });

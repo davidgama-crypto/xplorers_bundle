@@ -25,10 +25,11 @@ router.get('/', async (req, res, next) => {
 });
 
 // Get the a specific room's state
-router.get('/:id', verifyJwt, async (req, res, next) => {
+router.get('/:roomId', verifyJwt, async (req, res, next) => {
   try {
     const { id } = req.token;
-    const room = await RoomsController.getRoomById(req.params.id);
+    const { roomId } = req.params;
+    const room = await RoomsController.getRoomById(roomId);
     if (!room.playerInRoom(id)) {
       res.status(403).send({
         error: `playerId=${id} not in roomId=${room.id}`,
@@ -96,18 +97,17 @@ router.put('/:roomId/games', verifyJwt, async (req, res, next) => {
 });
 
 // Player joins/rejoins the room
-router.post('/:id/players', async (req, res, next) => {
+router.post('/:roomId/players', async (req, res, next) => {
   try {
     const { displayName, avatar } = req.body;
-    const { id } = req.params;
+    const { roomId } = req.params;
     if (!displayName || !avatar) {
       res.status(400).send({
         error: 'Missing displayName or avatar',
       });
       return;
     }
-    const room = await RoomsController.getRoomById(id);
-    const player = await RoomsController.createNewPlayerForRoom(room, displayName, avatar);
+    const player = await RoomsController.createNewPlayerForRoom(roomId, displayName, avatar);
     res.send(player);
   } catch (err) {
     console.log(err);
@@ -151,6 +151,13 @@ router.put('/:roomId/players/:playerId', verifyJwt, async (req, res, next) => {
     res.send(newState);
   } catch (err) {
     console.log(err);
+
+    if (err instanceof BadOperationError) {
+      res.status(400).send({
+        error: err.message,
+      });
+      return;
+    }
     next(err);
   }
 });
