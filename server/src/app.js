@@ -3,8 +3,8 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 
-const botRouter = require('./routes/bot');
-const roomsRouter = require('./routes/rooms');
+const botRouter = require('./routers/bot');
+const roomsRouter = require('./routers/rooms');
 
 const app = express();
 

@@ -6,7 +6,7 @@ const NotPermittedError = require('../errors/NotPermittedError');
 class RoomsController {
   static async generateRoom(serverUrl) {
     const room = await new GameRoom().save();
-    const url = `${serverUrl}/api/rooms/${room.id}`;
+    const url = `${serverUrl}/rooms/${room.id}`;
     return {
       roomId: room.id,
       url,

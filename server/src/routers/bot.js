@@ -26,8 +26,8 @@ slackEvents.on('app_mention', async (event) => {
   console.log('Incoming app_mention event.text:', event.text);
   let text = '';
   if (event.text.includes('play')) {
-    const roomId = await RoomsController.generateRoom();
-    text = serverURL + roomId;
+    const { url } = await RoomsController.generateRoom();
+    text = url;
   } else {
     text = "Sorry I didn't quite get that, try saying `@bundle let's play!`";
   }

@@ -13,9 +13,7 @@ Docs for Backend API Design
 - [x] First player to join the room becomes Host of the room
 - [x] Host can update game settings like which games to play
 - [x] When all players are "ready" the game starts automatically by updating game room state and players
-- [ ] When player is disconnected a player is removed from the game room
-- [ ] When game state is updated by the server or other players, all players are notified dynamically
-- [ ] When the last player is "done" with the current phase, the game state is progressed automatically to the next phase for all players simultaneously
+
 
 
 # /api/rooms
