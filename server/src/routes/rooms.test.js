@@ -1,44 +1,35 @@
-const supertest = require('supertest');
 const jwt = require('jsonwebtoken');
 const { JWT_SECRET } = require('../utils/constants');
 const app = require('../app');
+const request = require('../testUtils/init')(app);
+
+let createdRoomId;
+let createdPlayerId1;
+let createdPlayer1Token;
+let createdPlayerId2;
+let createdPlayer2Token;
+const validNonPlayerToken = jwt.sign({ id: 'nonexistant' }, JWT_SECRET);
+
+// Utility function to simulate game phase
+async function finishOneGamePhase() {
+  let res = await request
+    .put(`/api/rooms/${createdRoomId}/players/${createdPlayerId1}`)
+    .set('Authorization', `Bearer ${createdPlayer1Token}`)
+    .send({
+      done: true,
+    });
+  expect(res.status).toBe(200);
+
+  res = await request
+    .put(`/api/rooms/${createdRoomId}/players/${createdPlayerId2}`)
+    .set('Authorization', `Bearer ${createdPlayer2Token}`)
+    .send({
+      done: true,
+    });
+  expect(res.status).toBe(200);
+}
 
 describe('rooms API', () => {
-  let server;
-  let request;
-  let serverAddress;
-
-  let createdRoomId;
-  let createdPlayerId1;
-  let createdPlayer1Token;
-  let createdPlayerId2;
-  let createdPlayer2Token;
-  const validNonPlayerToken = jwt.sign({ id: 'nonexistant' }, JWT_SECRET);
-
-  beforeAll(() => {
-    server = app.listen();
-    request = supertest(server);
-    serverAddress = `http://localhost:${server.address().port}`;
-  });
-
-  async function finishOneGamePhase() {
-    let res = await request
-      .put(`/api/rooms/${createdRoomId}/players/${createdPlayerId1}`)
-      .set('Authorization', `Bearer ${createdPlayer1Token}`)
-      .send({
-        done: true,
-      });
-    expect(res.status).toBe(200);
-
-    res = await request
-      .put(`/api/rooms/${createdRoomId}/players/${createdPlayerId2}`)
-      .set('Authorization', `Bearer ${createdPlayer2Token}`)
-      .send({
-        done: true,
-      });
-    expect(res.status).toBe(200);
-  }
-
   it('can create a room which returns a roomId and url', (done) => {
     request
       .get('/api/rooms')
@@ -382,6 +373,6 @@ describe('rooms API', () => {
   });
 
   afterAll(() => {
-    server.close();
+    request.server.close();
   });
 });
