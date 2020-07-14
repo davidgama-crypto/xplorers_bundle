@@ -1,8 +1,9 @@
 const jwt = require('jsonwebtoken');
 const { JWT_SECRET } = require('../utils/constants');
-const app = require('../app');
-const request = require('../testUtils/init')(app);
+const server = require('../server');
+const init = require('../testUtils/init');
 
+let request;
 let createdRoomId;
 let createdPlayerId1;
 let createdPlayer1Token;
@@ -30,6 +31,10 @@ async function finishOneGamePhase() {
 }
 
 describe('rooms API', () => {
+  beforeAll(async () => {
+    request = await init(server);
+  });
+
   it('can create a room which returns a roomId and url', (done) => {
     request
       .get('/api/rooms')
@@ -66,7 +71,7 @@ describe('rooms API', () => {
         expect(token).toBeDefined();
         expect(displayName).toBe('test');
         expect(avatar).toBe('test');
-        expect(connected).toBe(true);
+        expect(connected).toBe(false);
         expect(done).toBe(false);
         expect(ready).toBe(false);
 
@@ -244,7 +249,7 @@ describe('rooms API', () => {
     const expected = {
       playerState: {},
     };
-    expected.playerState[createdPlayerId1] = 'sometestvalue';
+    expected.playerState[createdPlayerId1] = 5;
 
     request
       .put(`/api/rooms/${createdRoomId}`)
@@ -259,13 +264,13 @@ describe('rooms API', () => {
         expect(gameData[0].rounds).toBeDefined();
         expect(gameData[0].rounds.length).toBe(1);
         expect(gameData[0].rounds[0].playerState).toBeDefined();
-        expect(gameData[0].rounds[0].playerState[createdPlayerId1]).toBe('sometestvalue');
+        expect(gameData[0].rounds[0].playerState[createdPlayerId1]).toBe(5);
       })
       .end(doneCb);
   });
 
   // a game room with 2 players all ready=true sets status=playing automatically
-  it('can add a player to an existing room', async () => {
+  it('a game room with 2 players all ready=true sets status=playing automatically', async () => {
     // add a new player
     let res = await request
       .post(`/api/rooms/${createdRoomId}/players`)
@@ -279,7 +284,7 @@ describe('rooms API', () => {
     expect(res.body.token).toBeDefined();
     expect(res.body.displayName).toBe('test2');
     expect(res.body.avatar).toBe('test2');
-    expect(res.body.connected).toBe(true);
+    expect(res.body.connected).toBe(false);
     expect(res.body.done).toBe(false);
     expect(res.body.ready).toBe(false);
 
@@ -294,6 +299,8 @@ describe('rooms API', () => {
     expect(res.body.id).toBe(createdRoomId);
     expect(res.body.current).toBeDefined();
     expect(res.body.current.status).toBe('waiting');
+    expect(res.body.current.phaseStartTime).toBe(0);
+    expect(res.body.current.phaseDuration).toBe(0);
 
     // player1 ready
     res = await request
@@ -321,13 +328,18 @@ describe('rooms API', () => {
       .set('Authorization', `Bearer ${createdPlayer1Token}`);
 
     expect(res.status).toBe(200);
-    expect(res.body.id).toBe(createdRoomId);
-    expect(res.body.current).toBeDefined();
-    expect(res.body.current.status).toBe('playing');
+    const roomState = res.body;
+    expect(roomState.id).toBe(createdRoomId);
+    expect(roomState.current).toBeDefined();
+    expect(roomState.current.status).toBe('playing');
+    const earlier = Math.floor(Date.now() / 1000) - 10000;
+    expect(roomState.current.phaseStartTime > earlier).toBe(true);
+    const { phaseDurations } = roomState.gameData[roomState.current.game];
+    expect(roomState.current.phaseDuration).toBe(phaseDurations[roomState.current.phase]);
   });
 
-  // updating current players to done progresses game to next phase which is 1
-  it('updating current players to done progresses game to next phase which is 1', async () => {
+  // updating current players to done progresses game to next phase from 0 -> 1
+  it('updating current players to done progresses game to next phase from 0 -> 1', async () => {
     await finishOneGamePhase();
 
     const res = await request
@@ -342,12 +354,35 @@ describe('rooms API', () => {
     expect(res.body.current.status).toBe('playing');
   });
 
-  // updating current players to done until last phase (3) finishes the game
-  // updating current players to done progresses game to next phase which is 1
-  it('updating current players to done progresses game to next phase which is 1', async () => {
-    await finishOneGamePhase();
+  // updating current players to done until last phase (3) finishes the current round and game
+  // when the round is finished, scores are calculated for the round and added to total scores
+  it('updating to last phase finishes the round and finishes game with score calculation', async () => {
+    const player1State = {};
+    player1State[createdPlayerId1] = 5;
+    const player2State = {};
+    player2State[createdPlayerId2] = 3;
 
     let res = await request
+      .put(`/api/rooms/${createdRoomId}`)
+      .set('Authorization', `Bearer ${createdPlayer1Token}`)
+      .send({
+        playerState: player1State,
+      });
+
+    expect(res.status).toBe(200);
+
+    res = await request
+      .put(`/api/rooms/${createdRoomId}`)
+      .set('Authorization', `Bearer ${createdPlayer2Token}`)
+      .send({
+        playerState: player2State,
+      });
+
+    expect(res.status).toBe(200);
+
+    await finishOneGamePhase();
+
+    res = await request
       .get(`/api/rooms/${createdRoomId}`)
       .set('Authorization', `Bearer ${createdPlayer1Token}`);
 
@@ -364,15 +399,29 @@ describe('rooms API', () => {
       .get(`/api/rooms/${createdRoomId}`)
       .set('Authorization', `Bearer ${createdPlayer1Token}`);
 
+    const roomState = res.body;
+
     expect(res.status).toBe(200);
-    expect(res.body.id).toBe(createdRoomId);
-    expect(res.body.current.game).toBe(0);
-    expect(res.body.current.round).toBe(0);
-    expect(res.body.current.phase).toBe(0);
-    expect(res.body.current.status).toBe('finished');
+    expect(roomState.id).toBe(createdRoomId);
+    expect(roomState.current.game).toBe(0);
+    expect(roomState.current.round).toBe(0);
+    expect(roomState.current.phase).toBe(0);
+    expect(roomState.current.status).toBe('finished');
+    expect(roomState.totalScores).toBeDefined();
+    expect(roomState.totalScores.length).toBe(2);
+    expect(roomState.totalScores[0].playerId).toBe(createdPlayerId1);
+    expect(roomState.totalScores[0].score).toBe(10 * player1State[createdPlayerId1]);
+    expect(roomState.totalScores[1].playerId).toBe(createdPlayerId2);
+    expect(roomState.totalScores[1].score).toBe(10 * player2State[createdPlayerId2]);
+
+    const currentRound = roomState.gameData[0].rounds[0];
+    expect(currentRound.scoredPoints[createdPlayerId1]).toBe(10 * player1State[createdPlayerId1]);
+    expect(currentRound.scoredPoints[createdPlayerId2]).toBe(10 * player2State[createdPlayerId2]);
   });
 
-  afterAll(() => {
-    request.server.close();
+  afterAll((done) => {
+    request.server.close(() => {
+      done();
+    });
   });
 });

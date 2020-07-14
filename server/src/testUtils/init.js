@@ -1,13 +1,18 @@
 /* eslint-disable import/no-extraneous-dependencies */
+/* istanbul ignore file */
+
 const supertest = require('supertest');
 
 // supertestInit() takes in an express app and returns request client, server object
-function init(app) {
-  const server = app.listen();
-  const request = supertest(server);
-  request.server = server;
-  request.serverAddress = `http://localhost:${server.address().port}`;
-  return request;
+function init(server) {
+  return new Promise((resolve) => {
+    server.listen(0, () => {
+      const request = supertest(server);
+      request.server = server;
+      request.serverAddress = `http://localhost:${server.address().port}`;
+      resolve(request);
+    });
+  });
 }
 
 module.exports = init;

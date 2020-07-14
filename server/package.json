@@ -5,7 +5,7 @@
   "scripts": {
     "start": "node main.js",
     "dev": "nodemon main.js",
-    "test": "jest --coverage"
+    "test": "jest --coverage --silent"
   },
   "dependencies": {
     "@slack/events-api": "^2.3.3",

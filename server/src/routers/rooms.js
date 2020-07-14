@@ -146,8 +146,8 @@ router.get('/:roomId/players/:playerId', async (req, res, next) => {
 router.put('/:roomId/players/:playerId', verifyJwt, async (req, res, next) => {
   try {
     const { roomId, playerId } = req.params;
-    const room = await RoomsController.getRoomById(roomId);
-    const newState = await RoomsController.updatePlayerInfoInRoom(room, playerId, req.body);
+
+    const newState = await RoomsController.updatePlayerInfoInRoom(roomId, playerId, req.body);
     res.send(newState);
   } catch (err) {
     console.log(err);

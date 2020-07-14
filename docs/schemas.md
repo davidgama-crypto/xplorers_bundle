@@ -2,10 +2,12 @@
 
 Test Game Example Schema for Entire Room State
 
-```json
-GET /api/rooms/123
+`GET /api/rooms/123`
 
 Response Body:
+
+```json
+
 
 {
 	"id": 123,
@@ -33,11 +35,11 @@ Response Body:
 		}
 	},
 	"totalScores": [{
-			"name": "david",
+			"playerId": "aslkasdaf231sd",
 			"score": 10
 		},
 		{
-			"name": "shin",
+			"playerId": "aslkdj231sd",
 			"score": 50
 		}
 	],
@@ -46,9 +48,13 @@ Response Body:
 		"type": "test",
 		"totalRounds": 2,
 		"totalPhases": 3,
+		"phaseDurations": [
+			1,
+			5,
+			5,
+		],
 		"rounds": [{
 				"id": 0,
-				"finished": true,
 				"scoredPoints": {
 					"aslkasdaf231sd": 200,
 					"aslkdj231sd": 100
@@ -61,7 +67,6 @@ Response Body:
 			},
 			{
 				"id": 1,
-				"finished": false,
 				"scoredPoints": {},
 				"initState": {},
 				"playerState": {

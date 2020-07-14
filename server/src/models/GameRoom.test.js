@@ -3,6 +3,13 @@ const MockCache = require('../utils/MockCache');
 const Player = require('./Player');
 
 const cache = new MockCache();
+
+// mock socket
+global.io = {
+  to: () => ({
+    emit: () => {},
+  }),
+};
 GameRoom.DataStore = cache;
 
 describe('GameRoom', () => {
@@ -41,7 +48,7 @@ describe('GameRoom', () => {
     expect(room.getTotalNumberOfPlayers()).toBe(1);
 
     expect(room.state.current.players[player.id].done).toBe(false);
-    expect(room.state.current.players[player.id].connected).toBe(true);
+    expect(room.state.current.players[player.id].connected).toBe(false);
 
     const gotPlayer = room.getPlayer(player.id);
     expect(gotPlayer).toStrictEqual(player);

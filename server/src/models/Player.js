@@ -9,7 +9,7 @@ class Player {
     this.displayName = displayName;
     this.avatar = avatar;
     this.done = false;
-    this.connected = true;
+    this.connected = false;
     this.ready = false;
     this.token = jwt.sign({ id: this.id }, JWT_SECRET);
   }

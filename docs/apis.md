@@ -13,6 +13,7 @@ Docs for Backend API Design
 - [x] First player to join the room becomes Host of the room
 - [x] Host can update game settings like which games to play
 - [x] When all players are "ready" the game starts automatically by updating game room state and players
+- [x] When a round is finished, the scores for that round are calculated and added to totalScore
 
 
 
