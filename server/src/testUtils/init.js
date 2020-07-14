@@ -1,4 +1,6 @@
 /* eslint-disable import/no-extraneous-dependencies */
+/* istanbul ignore file */
+
 const supertest = require('supertest');
 
 // supertestInit() takes in an express app and returns request client, server object

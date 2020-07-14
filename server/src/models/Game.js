@@ -13,6 +13,8 @@ class Game {
     }
   }
 
+  // Returns a unique initial game state for each type
+  // takes in type and returns object
   static createInitialState(type) {
     let initState;
     switch (type) {
@@ -23,6 +25,21 @@ class Game {
         throw new Error(`Unsupported game type=${type}`);
     }
     return initState;
+  }
+
+  // Returns a unique scoring function for each game type
+  // takes in type and playerState returns an int
+  static calculateScoreForGame(type, playerState) {
+    let fn;
+    switch (type) {
+      case 'test':
+        // should be a number
+        fn = (singlePlayerState) => 10 * singlePlayerState;
+        break;
+      default:
+        throw new Error(`Unsupported game type=${type}`);
+    }
+    return fn(playerState);
   }
 
   static totalPhasesForType(type) {

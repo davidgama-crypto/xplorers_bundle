@@ -168,11 +168,56 @@ class GameRoom {
     const nextGame = nextRound === totalRounds ? game + 1 : game;
     const nextStatus = nextGame === totalGames ? 'finished' : this.getCurrentRoomStatus();
 
-    // modulo with limits
+    // if the nextRound !== round, calculate score for previous round, add to totalScores
+    // sort totalScores in descending order
+    if (nextRound !== round) {
+      this.calculateScoresForGameRound(game, round);
+    }
+
+    // modulo with limits to remove overflow
     this.state.current.game = nextGame % totalGames;
     this.state.current.round = nextRound % totalRounds;
     this.state.current.phase = nextPhase % totalPhases;
     this.setGameRoomStatus(nextStatus);
+  }
+
+  calculateScoresForGameRound(gameNum, roundNum) {
+    const currentGame = this.getCurrentGame();
+    const currentRound = currentGame.rounds[roundNum];
+
+    if (currentRound === undefined) throw new BadOperationError(`calculateScoresForGameRound(${gameNum}, ${roundNum}) did not match any round`);
+
+    const playerIds = this.getPlayerIds();
+    // return 2 element array for each playerId, scoreToAdd
+    const playerScores = playerIds.map((e) => {
+      const pId = e;
+      const pState = currentRound.playerState[pId];
+      let roundScore = 0;
+      if (pState !== undefined) {
+        roundScore = Game.calculateScoreForGame(currentGame.type, pState);
+      }
+
+      currentRound.scoredPoints[pId] = roundScore;
+
+      return [pId, roundScore];
+    });
+    playerScores.forEach((e) => this.updateTotalScoreForPlayerId(e[0], e[1]));
+    this.state.totalScores.sort((a, b) => b.score - a.score);
+  }
+
+  updateTotalScoreForPlayerId(playerId, scoreToAdd) {
+    const totalScores = Object.entries(this.state.totalScores);
+    const foundIndex = totalScores.findIndex((e) => e.playerId === playerId);
+
+    if (foundIndex === -1) {
+      const newEntry = {
+        playerId,
+        score: scoreToAdd,
+      };
+      this.state.totalScores.push(newEntry);
+    } else {
+      this.state.totalScores[foundIndex].scores += scoreToAdd;
+    }
   }
 
   setGameRoomStatus(status) {

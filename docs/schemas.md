@@ -33,11 +33,11 @@ Response Body:
 		}
 	},
 	"totalScores": [{
-			"name": "david",
+			"playerId": "aslkasdaf231sd",
 			"score": 10
 		},
 		{
-			"name": "shin",
+			"playerId": "aslkdj231sd",
 			"score": 50
 		}
 	],

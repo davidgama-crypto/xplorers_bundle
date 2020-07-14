@@ -126,8 +126,6 @@ describe('socket events', () => {
   // when all players are ready, game room status updates to playing
   it('when all players are ready, game room status updates to playing', async (done) => {
     ioClient.once('updated', (message) => {
-      console.log(message.current.players);
-
       expect(message.current.players[player2.id].ready).toBe(true);
       expect(message.current.players[player1.id].ready).toBe(true);
       expect(message.current.status).toBe('playing');
@@ -155,7 +153,6 @@ describe('socket events', () => {
 
     expect(res.status).toBe(200);
     expect(res.body.totalGames).toBe(1);
-    console.log(res.body.current.players);
 
     const room = await getRoom(roomId, player1.token);
 
