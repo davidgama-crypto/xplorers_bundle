@@ -26,13 +26,14 @@ class RoomsController {
   }
 
   static async getPlayerInRoom(roomId, playerId) {
-    const room = await GameRoom.findByRoomId(roomId);
+    const room = await RoomsController.getRoomById(roomId);
     const player = room.getPlayer(playerId);
     if (player === undefined) throw new MissingResourceError(`playerId=${playerId} not in roomId=${roomId}`);
     return player;
   }
 
-  static async updatePlayerInfoInRoom(room, playerId, playerInfo) {
+  static async updatePlayerInfoInRoom(roomId, playerId, playerInfo) {
+    const room = await RoomsController.getRoomById(roomId);
     if (!room.playerInRoom(playerId)) throw new MissingResourceError(`playerId=${playerId} doesn't existing in room`);
 
     const oldState = room.getPlayer(playerId);
@@ -46,18 +47,26 @@ class RoomsController {
   }
 
   static async updatePlayerStateInRoom(roomId, playerId, playerState) {
-    const room = await GameRoom.findByRoomId(roomId);
+    const room = await RoomsController.getRoomById(roomId);
     room.setPlayerStateForCurrentGame(playerId, playerState[playerId]);
     const updatedRoom = await room.save();
     return updatedRoom;
   }
 
   static async updateRoomGames(roomId, playerId, gamesToAdd) {
-    const room = await GameRoom.findByRoomId(roomId);
+    const room = await RoomsController.getRoomById(roomId);
     if (!room.playerIsHost(playerId)) throw new NotPermittedError(`playerId=${playerId} is not host of roomId=${roomId}`);
     gamesToAdd.forEach((e) => room.addGame(e.type, e.rounds));
     const updatedRoom = await room.save();
     return updatedRoom;
+  }
+
+  static async playerConnectedToRoom(roomId, playerId) {
+    const newState = await RoomsController.updatePlayerInfoInRoom(roomId, playerId, {
+      connected: true,
+    });
+
+    return newState;
   }
 }
 

@@ -2,10 +2,11 @@
 
 This describes supported socketIO events in the backend.
 
-- [ ] When a player client sends connected event, they should send their authentication token in order to be properly "connected" to the game room
+- [x] When a player client sends connected event, they should send their authentication token in order to be properly "connected" to the game room
 - [ ] When player is disconnected, a player is removed from the game room
 - [ ] When game state is updated by the server or other players, all players are notified dynamically
-- [ ] When the last player is "done" with the current phase, the game state is progressed automatically to the next phase for all players simultaneously
+- [x] When all players "done" with the current phase, the game state is progressed automatically to the next phase for all players simultaneously
+- [ ] When a phase starts, if player do not respond with "done" within the phaseDuration time, the server updates the room state to the next phase automatically and issues an update
 
 # on `connect` event
 

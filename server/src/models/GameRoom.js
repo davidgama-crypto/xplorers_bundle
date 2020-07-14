@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 const { nanoid } = require('nanoid');
 // problems with the redis library
 // const RedisClient = require('../utils/redisClient');
@@ -7,8 +8,10 @@ const BadOperationError = require('../errors/BadOperationError');
 const MissingResourceError = require('../errors/MissingResourceError');
 
 class GameRoom {
-  constructor(roomId = nanoid()) {
+  constructor(roomId = nanoid(), io = global.io) {
     this.id = roomId;
+    this.io = io;
+
     this.state = {
       id: roomId,
       current: {
@@ -37,6 +40,10 @@ class GameRoom {
     }
   }
 
+  notifyRoomChanged() {
+    this.io.to(this.id).emit('updated', this.state);
+  }
+
   addPlayerToRoom(playerId, playerInfo) {
     this.state.current.players[playerId] = playerInfo;
     if (this.getTotalNumberOfPlayers() === 1) this.state.current.host = playerId;
@@ -55,7 +62,9 @@ class GameRoom {
 
     this.state.current.players[playerId] = playerInfo;
 
-    if (this.gameRoomIsWaiting() && this.allPlayersReady()) this.setGameRoomStatus('playing');
+    if (this.gameRoomIsWaiting() && this.allPlayersReady()) {
+      this.setGameRoomStatus('playing');
+    }
 
     if (this.gameRoomIsPlaying() && this.allPlayersDoneWithPhase()) {
       this.next();
@@ -218,6 +227,7 @@ class GameRoom {
   async save() {
     const key = this.state.id;
     await GameRoom.DataStore.set(key, this.state);
+    this.notifyRoomChanged();
     return this;
   }
 }

@@ -1,3 +1,4 @@
+const http = require('http');
 const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
@@ -29,4 +30,10 @@ app.use('*', (_, res) => {
   res.sendFile(path.join(__dirname, '../', 'public', 'index.html'));
 });
 
-module.exports = app;
+const server = http.Server(app);
+
+const io = require('./routers/socket')(server);
+
+global.io = io;
+
+module.exports = server;

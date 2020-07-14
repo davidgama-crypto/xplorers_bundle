@@ -1,8 +1,9 @@
 const jwt = require('jsonwebtoken');
 const { JWT_SECRET } = require('../utils/constants');
-const app = require('../app');
-const request = require('../testUtils/init')(app);
+const server = require('../server');
+const init = require('../testUtils/init');
 
+let request;
 let createdRoomId;
 let createdPlayerId1;
 let createdPlayer1Token;
@@ -30,6 +31,10 @@ async function finishOneGamePhase() {
 }
 
 describe('rooms API', () => {
+  beforeAll(async () => {
+    request = await init(server);
+  });
+
   it('can create a room which returns a roomId and url', (done) => {
     request
       .get('/api/rooms')
@@ -66,7 +71,7 @@ describe('rooms API', () => {
         expect(token).toBeDefined();
         expect(displayName).toBe('test');
         expect(avatar).toBe('test');
-        expect(connected).toBe(true);
+        expect(connected).toBe(false);
         expect(done).toBe(false);
         expect(ready).toBe(false);
 
@@ -279,7 +284,7 @@ describe('rooms API', () => {
     expect(res.body.token).toBeDefined();
     expect(res.body.displayName).toBe('test2');
     expect(res.body.avatar).toBe('test2');
-    expect(res.body.connected).toBe(true);
+    expect(res.body.connected).toBe(false);
     expect(res.body.done).toBe(false);
     expect(res.body.ready).toBe(false);
 
@@ -372,7 +377,9 @@ describe('rooms API', () => {
     expect(res.body.current.status).toBe('finished');
   });
 
-  afterAll(() => {
-    request.server.close();
+  afterAll((done) => {
+    request.server.close(() => {
+      done();
+    });
   });
 });
