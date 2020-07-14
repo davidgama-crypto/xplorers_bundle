@@ -1,4 +1,3 @@
-const { connect } = require('socket.io-client');
 const GameRoom = require('../models/GameRoom');
 const Player = require('../models/Player');
 const MissingResourceError = require('../errors/MissingResourceError');

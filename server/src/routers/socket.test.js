@@ -152,6 +152,7 @@ describe('socket events', () => {
     });
   });
 
+  // when phase duration is met, room state is updated for all clients
   it('when all players do not respond done in time, room state is updated automatically after phaseDuration (1 second here)', async (done) => {
     const room = await getRoom(roomId, player1.token);
 
@@ -238,8 +239,6 @@ describe('socket events', () => {
       done: true,
     });
   });
-
-  // when phase duration is met, room state is updated for all clients
 
   afterAll(async (done) => {
     // disconnect manually
