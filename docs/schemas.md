@@ -9,8 +9,8 @@ Response Body:
 
 {
 	"id": 123,
-	"finished": false,
 	"current": {
+		"status": "waiting|playing|finished",
 		"game": 0,
 		"round": 1,
 		"phase": 1,
