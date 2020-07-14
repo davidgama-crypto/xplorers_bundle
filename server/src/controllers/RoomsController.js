@@ -1,7 +1,9 @@
+const { connect } = require('socket.io-client');
 const GameRoom = require('../models/GameRoom');
 const Player = require('../models/Player');
 const MissingResourceError = require('../errors/MissingResourceError');
 const NotPermittedError = require('../errors/NotPermittedError');
+const PlayerConnections = require('../models/PlayerConnections');
 
 class RoomsController {
   static async generateRoom(serverUrl) {
@@ -61,12 +63,33 @@ class RoomsController {
     return updatedRoom;
   }
 
-  static async playerConnectedToRoom(roomId, playerId) {
+  static async playerConnectedToRoom(roomId, playerId, socket) {
+    PlayerConnections.addPlayerConnection(playerId, roomId, socket);
     const newState = await RoomsController.updatePlayerInfoInRoom(roomId, playerId, {
       connected: true,
     });
 
     return newState;
+  }
+
+  static async removePlayerConnection(socket) {
+    const connectionInfo = PlayerConnections.getInfoForConnection(socket);
+
+    if (connectionInfo) {
+      const { playerId, info } = connectionInfo;
+      const { roomId } = info;
+
+      const room = await RoomsController.getRoomById(roomId);
+      if (room.gameRoomIsWaiting()) {
+        room.removePlayerFromRoom(playerId);
+      } else {
+        room.updatePlayerInfo(playerId, {
+          connected: false,
+        });
+      }
+      PlayerConnections.removePlayerConnection(socket);
+      await room.save();
+    }
   }
 }
 

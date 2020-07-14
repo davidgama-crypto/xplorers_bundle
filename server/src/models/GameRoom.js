@@ -12,6 +12,7 @@ class GameRoom {
     this.id = roomId;
     this.io = io;
     this.timer = null;
+    this.playerConnections = {};
 
     this.state = {
       id: roomId,
@@ -75,6 +76,12 @@ class GameRoom {
     }
   }
 
+  removePlayerFromRoom(playerId) {
+    if (this.playerInRoom(playerId)) {
+      delete this.state.current.players[playerId];
+    }
+  }
+
   startGameRoom() {
     this.setGameRoomStatus('playing');
     // unix time in seconds
@@ -114,10 +121,6 @@ class GameRoom {
 
   getPlayer(playerId) {
     return this.state.current.players[playerId];
-  }
-
-  removePlayerFromRoom(playerId) {
-    delete this.state.current.players[playerId];
   }
 
   playerInRoom(playerId) {

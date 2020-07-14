@@ -9,6 +9,11 @@ function init(server) {
   io.on('connect', (socket) => {
     console.log('Incoming connection');
 
+    socket.on('disconnecting', async () => {
+      console.log('socket disconnecting....');
+      await RoomController.removePlayerConnection(socket);
+    });
+
     socket.on('disconnect', async (reason) => {
       console.log(`socket disconnected for reason=${reason}`);
     });
@@ -18,9 +23,7 @@ function init(server) {
         const { playerId, roomId, token } = message;
 
         jwt.verify(token, JWT_SECRET);
-        await RoomController.playerConnectedToRoom(roomId, playerId);
-        socket.join(roomId);
-
+        await RoomController.playerConnectedToRoom(roomId, playerId, socket);
         if (ack !== undefined) ack();
       } catch (err) {
         console.log(err);
