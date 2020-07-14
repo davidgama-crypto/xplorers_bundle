@@ -19,6 +19,8 @@ class GameRoom {
         game: 0,
         round: 0,
         phase: 0,
+        phaseStartTime: 0,
+        phaseDuration: 0,
         players: {},
       },
       totalScores: [],
@@ -63,13 +65,21 @@ class GameRoom {
     this.state.current.players[playerId] = playerInfo;
 
     if (this.gameRoomIsWaiting() && this.allPlayersReady()) {
-      this.setGameRoomStatus('playing');
+      this.startGameRoom();
     }
 
     if (this.gameRoomIsPlaying() && this.allPlayersDoneWithPhase()) {
       this.next();
       this.resetPlayersDone();
     }
+  }
+
+  startGameRoom() {
+    this.setGameRoomStatus('playing');
+    // unix time in seconds
+    this.state.current.phaseStartTime = Math.floor(Date.now() / 1000);
+    const currentGame = this.getCurrentGame();
+    this.state.current.phaseDuration = currentGame.phaseDurations[this.state.current.phase];
   }
 
   resetPlayersDone() {

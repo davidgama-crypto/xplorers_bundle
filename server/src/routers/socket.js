@@ -10,7 +10,7 @@ function init(server) {
     console.log('Incoming connection');
     socket.on('disconnecting', async () => {
       console.log('disconnecting...');
-      console.log(socket.room);
+      console.log(socket.rooms);
     });
     socket.on('disconnect', async (reason) => {
       console.log(`socket disconnected for reason=${reason}`);

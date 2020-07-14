@@ -46,6 +46,11 @@ Response Body:
 		"type": "test",
 		"totalRounds": 2,
 		"totalPhases": 3,
+		"phaseDurations": [
+			5,
+			5,
+			5,
+		],
 		"rounds": [{
 				"id": 0,
 				"finished": true,

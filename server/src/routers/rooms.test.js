@@ -270,7 +270,7 @@ describe('rooms API', () => {
   });
 
   // a game room with 2 players all ready=true sets status=playing automatically
-  it('can add a player to an existing room', async () => {
+  it('a game room with 2 players all ready=true sets status=playing automatically', async () => {
     // add a new player
     let res = await request
       .post(`/api/rooms/${createdRoomId}/players`)
@@ -299,6 +299,8 @@ describe('rooms API', () => {
     expect(res.body.id).toBe(createdRoomId);
     expect(res.body.current).toBeDefined();
     expect(res.body.current.status).toBe('waiting');
+    expect(res.body.current.phaseStartTime).toBe(0);
+    expect(res.body.current.phaseDuration).toBe(0);
 
     // player1 ready
     res = await request
@@ -326,9 +328,14 @@ describe('rooms API', () => {
       .set('Authorization', `Bearer ${createdPlayer1Token}`);
 
     expect(res.status).toBe(200);
-    expect(res.body.id).toBe(createdRoomId);
-    expect(res.body.current).toBeDefined();
-    expect(res.body.current.status).toBe('playing');
+    const roomState = res.body;
+    expect(roomState.id).toBe(createdRoomId);
+    expect(roomState.current).toBeDefined();
+    expect(roomState.current.status).toBe('playing');
+    const earlier = Math.floor(Date.now() / 1000) - 10000;
+    expect(roomState.current.phaseStartTime > earlier).toBe(true);
+    const { phaseDurations } = roomState.gameData[roomState.current.game];
+    expect(roomState.current.phaseDuration).toBe(phaseDurations[roomState.current.phase]);
   });
 
   // updating current players to done progresses game to next phase from 0 -> 1

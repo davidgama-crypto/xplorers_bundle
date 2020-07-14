@@ -5,6 +5,7 @@ class Game {
     this.type = type;
     this.totalRounds = rounds;
     this.totalPhases = Game.totalPhasesForType(type);
+    this.phaseDurations = Game.phaseDurationsForGame(type);
     this.rounds = [];
     const initState = Game.createInitialState(type);
     for (let i = 0; i < this.totalRounds; i += 1) {
@@ -25,6 +26,23 @@ class Game {
         throw new Error(`Unsupported game type=${type}`);
     }
     return initState;
+  }
+
+  // Return an array of phase durations in seconds
+  static phaseDurationsForGame(type) {
+    let durations;
+    switch (type) {
+      case 'test':
+        durations = [
+          5,
+          5,
+          5,
+        ];
+        break;
+      default:
+        throw new Error(`Unsupported game type=${type}`);
+    }
+    return durations;
   }
 
   // Returns a unique scoring function for each game type

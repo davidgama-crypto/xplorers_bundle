@@ -125,6 +125,21 @@ describe('socket events', () => {
 
   // when all players are ready, game room status updates to playing
   it('when all players are ready, game room status updates to playing', async (done) => {
+    // need to add game first
+    const res = await request
+      .put(`/api/rooms/${roomId}/games`)
+      .set('Authorization', `Bearer ${player1.token}`)
+      .send({
+        games: [
+          {
+            type: 'test',
+            rounds: 1,
+          },
+        ],
+      });
+    expect(res.status).toBe(200);
+    expect(res.body.totalGames).toBe(1);
+
     ioClient.once('updated', (message) => {
       expect(message.current.players[player2.id].ready).toBe(true);
       expect(message.current.players[player1.id].ready).toBe(true);
@@ -139,21 +154,6 @@ describe('socket events', () => {
 
   // when all players are done for the current phase, room state is updated for all clients
   it('when all players are ready, game room status updates to playing', async (done) => {
-    const res = await request
-      .put(`/api/rooms/${roomId}/games`)
-      .set('Authorization', `Bearer ${player1.token}`)
-      .send({
-        games: [
-          {
-            type: 'test',
-            rounds: 1,
-          },
-        ],
-      });
-
-    expect(res.status).toBe(200);
-    expect(res.body.totalGames).toBe(1);
-
     const room = await getRoom(roomId, player1.token);
 
     expect(room.current.game).toBe(0);
