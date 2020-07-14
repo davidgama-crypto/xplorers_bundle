@@ -11,6 +11,7 @@ class GameRoom {
   constructor(roomId = nanoid(), io = global.io) {
     this.id = roomId;
     this.io = io;
+    this.timer = null;
 
     this.state = {
       id: roomId,
@@ -80,6 +81,24 @@ class GameRoom {
     this.state.current.phaseStartTime = Math.floor(Date.now() / 1000);
     const currentGame = this.getCurrentGame();
     this.state.current.phaseDuration = currentGame.phaseDurations[this.state.current.phase];
+    this.startPhaseIncrementTimer();
+  }
+
+  startPhaseIncrementTimer() {
+    console.log('timer started');
+
+    this.timer = setTimeout(async () => {
+      const room = await GameRoom.findByRoomId(this.id);
+      this.resetPlayersDone();
+      room.next();
+      await room.save();
+
+      console.log('triggering timer..............');
+    }, 1000 * this.state.current.phaseDuration);
+  }
+
+  clearPhaseIncrementTimer() {
+    clearTimeout(this.timer);
   }
 
   resetPlayersDone() {
@@ -165,7 +184,8 @@ class GameRoom {
   next() {
     if (this.getTotalNumberOfPlayers() < 2) throw new BadOperationError('Need at least 2 players in room, cannot call next()');
     if (this.state.totalGames === 0) throw new BadOperationError('No games added to room, cannot call next()');
-
+    console.log(`roomId=${this.id} calling next()`);
+    this.clearPhaseIncrementTimer();
     // get the current game to get the totalRounds, totalPhases
     const currentGame = this.getCurrentGame();
     const { phase, round, game } = this.state.current;
@@ -176,7 +196,7 @@ class GameRoom {
     const nextPhase = phase + 1;
     const nextRound = nextPhase === totalPhases ? round + 1 : round;
     const nextGame = nextRound === totalRounds ? game + 1 : game;
-    const nextStatus = nextGame === totalGames ? 'finished' : this.getCurrentRoomStatus();
+    const nextStatus = nextGame === totalGames ? 'finished' : 'playing';
 
     // if the nextRound !== round, calculate score for previous round, add to totalScores
     // sort totalScores in descending order
@@ -188,7 +208,13 @@ class GameRoom {
     this.state.current.game = nextGame % totalGames;
     this.state.current.round = nextRound % totalRounds;
     this.state.current.phase = nextPhase % totalPhases;
+    this.state.current.phaseStartTime = Math.floor(Date.now() / 1000);
+    this.state.current.phaseDuration = currentGame.phaseDurations[this.state.current.phase];
+
     this.setGameRoomStatus(nextStatus);
+    if (!this.gameRoomIsFinished()) {
+      this.startPhaseIncrementTimer();
+    }
   }
 
   calculateScoresForGameRound(gameNum, roundNum) {

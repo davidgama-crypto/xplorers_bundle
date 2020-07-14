@@ -152,8 +152,7 @@ describe('socket events', () => {
     });
   });
 
-  // when all players are done for the current phase, room state is updated for all clients
-  it('when all players are ready, game room status updates to playing', async (done) => {
+  it('when all players do not respond done in time, room state is updated automatically after phaseDuration (1 second here)', async (done) => {
     const room = await getRoom(roomId, player1.token);
 
     expect(room.current.game).toBe(0);
@@ -174,7 +173,48 @@ describe('socket events', () => {
 
       expect(message.current.players[player1.id].done).toBe(true);
       expect(message.current.players[player2.id].done).toBe(false);
+    });
+
+    await updatePlayerInfo(player1.id, player1.token, {
+      done: true,
+    });
+
+    // then this will trigger automatically
+    ioClient.once('updated', (message) => {
+      expect(message.current.game).toBe(0);
+      expect(message.current.round).toBe(0);
+      expect(message.current.phase).toBe(1);
+      expect(message.current.players[player1.id].ready).toBe(true);
+      expect(message.current.players[player2.id].ready).toBe(true);
+
+      expect(message.current.players[player1.id].done).toBe(false);
+      expect(message.current.players[player2.id].done).toBe(false);
       done();
+    });
+  });
+
+  // when all players are done for the current phase, room state is updated for all clients
+  it('when all players are done for the current phase, room state is updated for all clients', async (done) => {
+    const room = await getRoom(roomId, player1.token);
+
+    expect(room.current.game).toBe(0);
+    expect(room.current.round).toBe(0);
+    expect(room.current.phase).toBe(1);
+    expect(room.current.players[player1.id].ready).toBe(true);
+    expect(room.current.players[player2.id].ready).toBe(true);
+    expect(room.current.players[player1.id].done).toBe(false);
+    expect(room.current.players[player2.id].done).toBe(false);
+
+    // this will trigger for player1
+    ioClient.once('updated', (message) => {
+      expect(message.current.game).toBe(0);
+      expect(message.current.round).toBe(0);
+      expect(message.current.phase).toBe(1);
+      expect(message.current.players[player1.id].ready).toBe(true);
+      expect(message.current.players[player2.id].ready).toBe(true);
+
+      expect(message.current.players[player1.id].done).toBe(true);
+      expect(message.current.players[player2.id].done).toBe(false);
     });
 
     await updatePlayerInfo(player1.id, player1.token, {
@@ -185,7 +225,7 @@ describe('socket events', () => {
     ioClient.once('updated', (message) => {
       expect(message.current.game).toBe(0);
       expect(message.current.round).toBe(0);
-      expect(message.current.phase).toBe(1);
+      expect(message.current.phase).toBe(2);
       expect(message.current.players[player1.id].ready).toBe(true);
       expect(message.current.players[player2.id].ready).toBe(true);
 

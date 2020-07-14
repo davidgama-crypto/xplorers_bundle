@@ -8,10 +8,7 @@ function init(server) {
 
   io.on('connect', (socket) => {
     console.log('Incoming connection');
-    socket.on('disconnecting', async () => {
-      console.log('disconnecting...');
-      console.log(socket.rooms);
-    });
+
     socket.on('disconnect', async (reason) => {
       console.log(`socket disconnected for reason=${reason}`);
     });

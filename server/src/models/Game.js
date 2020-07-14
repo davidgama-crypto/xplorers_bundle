@@ -34,8 +34,8 @@ class Game {
     switch (type) {
       case 'test':
         durations = [
-          5,
-          5,
+          1,
+          10,
           5,
         ];
         break;
