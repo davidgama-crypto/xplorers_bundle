@@ -7,11 +7,13 @@ function verifyJwt(req, res, next) {
     res.sendStatus(401);
   } else {
     const fields = token.split(' ');
-    if (fields.length !== 2) {
-      res.sendStatus(403);
-      return;
-    }
-    const jwtToken = fields[1];
+    //TODO REVIEW JWT TOKEN VALIDATION
+
+    // if (fields.length !== 2) {
+    //   res.sendStatus(403);
+    //   return;
+    // }
+    const jwtToken = fields[0];
     try {
       const payload = jwt.verify(jwtToken, JWT_SECRET);
 
