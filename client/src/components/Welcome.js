@@ -17,15 +17,14 @@ const Welcome = (props) => {
 
     const dispatch = useDispatch()
 
-    const initRoom = () =>{
-        APIRequestHandler.getRoomId()
-            .then((roomInformation) => {
-                console.log(roomInformation);
-                localStorage.setItem('roomId',JSON.stringify(roomInformation.roomId));
-                //return <Redirect to=`/rooms/{roomInformation.roomId}`  />
-                dispatch(initialState())
-                return props.history.push("/rooms/"+ roomInformation.roomId);
-            })
+    const initRoom = async () =>{
+
+        const roomInfo = await APIRequestHandler.getRoomId()
+        console.log('fetchedRoomInfo: ' , roomInfo)
+
+        localStorage.setItem('roomId',roomInfo.roomId)
+        dispatch(initialState())
+        props.history.push("/rooms/"+ roomInfo.roomId);
     }
 
 

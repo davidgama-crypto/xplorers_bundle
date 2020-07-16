@@ -11,6 +11,7 @@ class APIRequestHandler {
         return roomInformation;
     }
 
+    // requires auth
     async getGameStatus(roomId){
         const response  = await request(
             `/api/rooms/${roomId}`,
@@ -23,6 +24,7 @@ class APIRequestHandler {
     }
 
 
+    // generates the token
     async addPlayer(){
         const roomId = JSON.parse(localStorage.getItem('roomId'));
 
@@ -42,6 +44,7 @@ class APIRequestHandler {
         return response;
     }
 
+    // requires auth
     async addGames(games){
         const roomId = JSON.parse(localStorage.getItem('roomId'));
         const { response } = (await request(
@@ -54,6 +57,8 @@ class APIRequestHandler {
         return response;
     }
 
+
+    // requires auth
     async getPlayerInfo(){
         const roomId = JSON.parse(localStorage.getItem('roomId'));
         const playerId = JSON.parse(localStorage.getItem('playerId'));
@@ -67,6 +72,7 @@ class APIRequestHandler {
     }
 
 
+    // requires auth
     async updatePlayerState(playerState){
         const roomId = JSON.parse(localStorage.getItem('roomId'));
         const playerId = JSON.parse(localStorage.getItem('playerId'));
