@@ -10,6 +10,7 @@ import {
 } from '../store/store';
 import styles from './GameRoomPage.module.css';
 import ActiveGameRenderer from '../components/ActiveGameRenderer';
+import LeaderBoard from '../components/LeaderBoard';
 
 const GameRoomPage = () => {
   console.debug('In GameRoomPage render()');
@@ -69,11 +70,19 @@ const GameRoomPage = () => {
     return <WaitingRoom />
   }
 
-  console.debug('Room is active, rendering ActiveGameRender')
+  if (status === 'playing') {
+    console.debug('Room is in playing status')
+    return (
+      <ActiveGameRenderer />
+    )
+  }
 
-  return (
-    <ActiveGameRenderer />
-  )
+
+
+  console.debug('Room is in finished status')
+  return <LeaderBoard totalScores={roomState.totalScores} />
+
+  
 };
 
 export default GameRoomPage;

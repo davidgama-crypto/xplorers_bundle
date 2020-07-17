@@ -96,6 +96,28 @@ class APIRequestHandler {
         )
         return response;
     }
+
+    async updatePlayerState(roomId, playerId, playerState, token){
+
+        const requestPayload = {
+            playerState: {
+                [playerId]: playerState
+            }
+        }
+
+        const { response } = await request(
+            `/api/rooms/${roomId}`,
+            {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(requestPayload),
+            }
+
+        )
+        return response;
+    }
 }
 
 

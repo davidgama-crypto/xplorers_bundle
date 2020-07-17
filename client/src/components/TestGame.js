@@ -1,42 +1,46 @@
 import React from "react";
-import {useSelector} from "react-redux";
-import {fetchGameStatus, gamesSelector} from "../slices/GameStore";
+import { useRoomState} from '../store/store'
+import { useDispatch } from 'react-redux'
 import GameInstructions from "./GameInstructions";
 import TestGamePhase from "./TestGamePhase";
 import LeaderBoard from "./LeaderBoard";
 import GameRoom from "./GameRoom";
 import APIRequestHandler from "../utils/ApiRequestHandler";
 import Socket from "../utils/Socket";
+import { Redirect } from "react-router-dom";
 
 const TestGame = () => {
     //const dispatch = useDispatch()
-    const { gameStatus } = useSelector(gamesSelector)
+    const { error, roomState, roomId } = useRoomState()
+
 
     const endTimeFunction = () =>{
         console.log('endTimeFunction');
     }
 
-    const renderSwitch = () => {
-        switch(gameStatus.current.phase) {
+    const phaseRenderer = () => {
+        switch(roomState.current.phase) {
             case 0:
-                return <GameInstructions gameTitle = {'Test Game'}
-                                gameInstructions = { '1...... 2..... 3.....'}
-                                time={gameStatus.current.phaseDuration}
-                                endTime= {endTimeFunction}
-                            />
+                return (
+                <GameInstructions 
+                        gameTitle = {'Test Game'}
+                        gameInstructions={ 'Press the button before the timer runs out! Starting in...'}
+                        time={roomState.current.phaseDuration}
+                        endTime={endTimeFunction}
+                    />)
             case 1:
-                return <TestGamePhase gameTime = {gameStatus.current.phaseDuration} />
+                return <TestGamePhase gameTime={roomState.current.phaseDuration} />
             case 2:
-                return <LeaderBoard totalScores = {gameStatus.totalScores} />
+                return <LeaderBoard totalScores={roomState.totalScores} />
             default:
-                return <GameRoom />
+                return <Redirect to="/" />
         }
     }
 
 
     return(
         <div>
-                {renderSwitch()}
+                {phaseRenderer()}
         </div>
 
     );

@@ -1,35 +1,28 @@
-import React, {useEffect} from "react";
+import React from "react";
 import Timer from "./Timer";
 import APIRequestHandler from "../utils/ApiRequestHandler";
+import {useRoomState} from '../store/store'
+import PlayerCache from "../utils/PlayerCache";
 
 const TestGamePhase = (props) => {
 
-
-    useEffect( () => {
-        return () => {
-           submitGameInfo();
-        };
-    })
-
+    const {roomId, roomState} = useRoomState()
+    const {id, token} = PlayerCache.getPlayerInfo()
+    const {phaseStartTime, phaseDuration} = roomState.current
 
 
     //Adding player to the game
     const submitGameInfo = async () =>{
-        console.log('Submit game player result');
-        const playerStatus = JSON.stringify({
-            done: true
-        });
 
-        await APIRequestHandler.updatePlayerState(playerStatus)
-            .then((json) => {
-                console.log(json);
-            })
-            .catch((error) =>{
-                console.log(error)
-                alert(error.error);
-            })
+        const now = Math.floor(Date.now() / 1000) // now in seconds
+        const submitTime = now - phaseStartTime
+        let response = await APIRequestHandler.updatePlayerState(roomId, id, submitTime, token)
+        response = await APIRequestHandler.updatePlayerInfo(roomId, id, {done: true}, token)
     }
 
+
+    const submitted = roomState.current.players[id].done
+    const btnText = submitted ? 'Done!' : 'Click me now!'
 
     return(
         <div>
@@ -39,7 +32,7 @@ const TestGamePhase = (props) => {
                 />
             </div>
             <div>
-                <button onClick={submitGameInfo} className='roomCreateBtn'>Submit</button>
+                <button onClick={submitGameInfo} className='roomCreateBtn' disabled={submitted}>{btnText}</button>
 
             </div>
         </div>
