@@ -38,18 +38,13 @@ class APIRequestHandler {
 
 
     // generates the token
-    async addPlayer(roomId){
-
-        const playerInfo = JSON.stringify({
-            displayName: 'DefaultName',
-            avatar: 'pig'
-        })
+    async addPlayer(roomId, playerInfo){
 
         const response  = await request(
             `/api/rooms/${roomId}/players`,
             {
                 method: 'POST',
-                body: playerInfo
+                body: JSON.stringify(playerInfo)
             }
         )
 
@@ -57,13 +52,15 @@ class APIRequestHandler {
     }
 
     // requires auth
-    async addGames(games){
-        const roomId = JSON.parse(localStorage.getItem('roomId'));
+    async addGames(roomId, games, token){
         const { response } = (await request(
             `/api/rooms/${roomId}/games`,
             {
                 method: 'PUT',
-                body: games,
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(games),
             }
         ))
         return response;
@@ -85,14 +82,15 @@ class APIRequestHandler {
 
 
     // requires auth
-    async updatePlayerState(playerState){
-        const roomId = JSON.parse(localStorage.getItem('roomId'));
-        const playerId = JSON.parse(localStorage.getItem('playerId'));
+    async updatePlayerInfo(roomId, playerId, playerInfo, token){
         const { response } = await request(
             `/api/rooms/${roomId}/players/${playerId}`,
             {
                 method: 'PUT',
-                body: playerState,
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(playerInfo),
             }
 
         )

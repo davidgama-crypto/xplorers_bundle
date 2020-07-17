@@ -21,13 +21,23 @@ function init(server) {
     socket.on('authenticate', async (message, ack) => {
       try {
         const { playerId, roomId, token } = message;
+        console.log(`authenticate request received playerId=${playerId}, roomId=${roomId}`);
 
         jwt.verify(token, JWT_SECRET);
-        await RoomController.playerConnectedToRoom(roomId, playerId, socket);
-        if (ack !== undefined) ack();
+        const newState = await RoomController.playerConnectedToRoom(roomId, playerId, socket);
+        console.log('successfully authenticated');
+        console.log(newState);
+        if (ack !== undefined) {
+          console.log('ack() defined in authenticate request, sending ack(success)');
+          ack('success');
+        }
       } catch (err) {
+        console.log('error during socket authentication');
         console.log(err);
-        socket.disconnect();
+        if (ack !== undefined) {
+          console.log('ack() defined in authenticate request, sending ack(forbidden)');
+          ack('forbidden');
+        }
       }
     });
   });

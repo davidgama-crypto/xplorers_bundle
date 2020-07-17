@@ -1,64 +1,108 @@
-import React, {useEffect} from "react";
-import {useSelector,useDispatch} from "react-redux";
-import {fetchGameStatus, gamesSelector} from "../slices/GameStore";
-import WaitingRoom from "../components/WaitingRoom";
-import TestGame from "../components/TestGame";
-import {Redirect} from "react-router-dom";
-import LeaderBoard from "../components/LeaderBoard";
+import React from 'react';
+import { useDispatch } from 'react-redux';
+import { useParams, useHistory, Redirect } from 'react-router-dom';
+import Spinner from 'react-bootstrap/Spinner';
+import WaitingRoom from '../components/WaitingRoom';
+import TestGame from '../components/TestGame';
+import PlayerCache from '../utils/PlayerCache';
+import {
+  reconnectPlayerToRoom, useRoomState, roomCreated, addPlayerToRoom,
+} from '../store/store';
+import styles from './GameRoomPage.module.css';
 
-const GameRoomPage = ({match}) => {
-    const dispatch = useDispatch()
+const GameRoomPage = () => {
+  console.debug('In GameRoomPage render()');
 
-    const { gameStatus } = useSelector(gamesSelector)
-
-    useEffect( () => {
-        // code to run on component mount
-        async function initLocalStorage() {     // You can await here
-            console.log(match.params.id);
-             await localStorage.removeItem("token");
-             await localStorage.removeItem("roomId");
-             await localStorage.setItem('roomId',JSON.stringify(match.params.id));
-             await dispatch(fetchGameStatus())
-        }
-        initLocalStorage().then((r) => { console.log('finish')});
-
-    }, [])
-
-    const renderSwitch = () => {
-            console.log(gameStatus)
-            if (gameStatus === undefined || gameStatus === '' || gameStatus.current.status === 'waiting') {
-                return <WaitingRoom />
-            } else if (gameStatus.current.status === 'playing') {
-                switch (gameStatus.current.game) {
-                    case 0:
-                        return <TestGame />
-                    default:
-                        return <GameRoomPage />
-                }
-            } else if(gameStatus.current.status === 'finished'){
-                //TODO CHECK STATUS FINISHED ---> WHEN TEST GAME IS SUBMITED, THE GAME STATUS IS CHANGED TO FINISHED, AND PHASES RETURNED TO 0
-                localStorage.removeItem("token");
-                localStorage.removeItem("roomId");
-                localStorage.removeItem("roomId");
-                return <LeaderBoard totalScores = {gameStatus.totalScores} />
-            } else{
-                //removing game data to start  a new game
-                localStorage.removeItem("token");
-                localStorage.removeItem("roomId");
-                localStorage.removeItem("roomId");
-                return  <Redirect to="/" />
-            }
-
-    }
+  const dispatch = useDispatch()
+  const history = useHistory()
+  const { error, loading, roomState, roomId } = useRoomState()
+  const urlParams = useParams()
 
 
-    return(
-        <div>
-            {renderSwitch()}
-        </div>
+  if (error) {
+    alert(error)
+    history.push('/')
+  }
 
-    );
+  if (loading) {
+      console.log('room is loading')
+      return (
+        <>
+          <Spinner animation="border" />
+        </>
+      )
+  }
 
-}
+  if (roomId === null) {
 
-export default GameRoomPage
+      console.debug('Setting roomId to URL params')
+
+      dispatch(roomCreated(urlParams.roomId))
+      return (
+        <>
+          <Spinner animation="border" />
+        </>
+      )
+  }
+
+  
+
+  if (roomState === null || !roomState.current) {
+
+      console.debug('No room data loaded, loading room')
+
+      console.debug('playerInfo does not exist, adding a new player to the room')
+      dispatch(addPlayerToRoom(roomId))
+
+      // // if there are cached credentials, reconnect to room
+      // // if there are no cached credentials, add new player
+      // if (PlayerCache.playerTokenExists()) {
+      //     console.debug('playerInfo already exists, attempting to reconnect')
+      //     dispatch(reconnectPlayerToRoom(roomId))
+      // } else {
+      //     console.debug('playerInfo does not exist, adding a new player to the room')
+      //     dispatch(addPlayerToRoom(roomId))
+      // }
+
+      return <Spinner animation="border" />
+  }
+
+
+  return (
+    <div>done</div>
+)
+
+  // if (error) {
+  //     alert('There was an error joining the room. Please create a new room.')
+  //     history.push('/')
+  // }
+
+  // console.debug('Game Room is already loaded and player is connected')
+  // console.debug(roomState)
+
+  // const {status, game } = roomState.current
+
+  // if (status === 'waiting') {
+  //     return <WaitingRoom />
+  // }
+
+  // const {type} = roomState.gameData[game]
+
+  // const gameTypeRenderer = (type) => {
+  //     switch(type) {
+  //         case "test":
+  //             return <TestGame />
+  //         default:
+  //             alert(`Unsupported game type=${type}`)
+  //             history.push('/')
+  //     }
+  // }
+
+  // return (
+  //     <div>{
+  //         gameTypeRenderer(type)
+  //     }</div>
+  // )
+};
+
+export default GameRoomPage;

@@ -1,4 +1,6 @@
 import React, {Component} from 'react';
+import 'bootstrap/dist/css/bootstrap.min.css';
+
 import './App.css';
 import Socket from "./utils/Socket";
 import {
@@ -18,9 +20,6 @@ class App extends Component {
         Socket.connect()
     }
 
-    componentWillUnmount() {
-        Socket.close()
-    }
 
     render() {
         return (
@@ -31,7 +30,7 @@ class App extends Component {
                 <hr />
                 <Switch>
                     <Route exact path="/"  component={WelcomePage} />
-                    <Route path="/rooms/:id" component={GameRoomPage}  />
+                    <Route path="/rooms/:roomId" component={GameRoomPage}  />
                 </Switch>
             </div>
         </Router>

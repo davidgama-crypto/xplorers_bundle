@@ -7,8 +7,8 @@ import pigAvatar from '../resources/pig.png';
 import womanAvatar from '../resources/woman.png';
 import logo from '../resources/bundleLogo.png';
 import '../css/WelcomePage.css'
-import {useDispatch, useSelector} from "react-redux";
-import {startNewGame} from '../store/store'
+import {useDispatch} from "react-redux";
+import {createNewRoom, useRoomState} from '../store/store'
 import { useHistory } from "react-router-dom";
 
 
@@ -17,15 +17,15 @@ const WelcomePage = () => {
     const dispatch = useDispatch()
     const history = useHistory()
 
-    const createPrivateRoom = () =>{
-        dispatch(startNewGame())
-    }
-    const {roomState, loading, error} = useSelector(state => state)
-    console.debug(loading,roomState, error)
+    
+    const {roomId, loading, error} = useRoomState()
 
-    if (roomState.current && roomState.current.status === 'waiting' && roomState.id) {
-      const {id} = roomState
-      history.push(`/rooms/${roomState.id}`)
+    const createPrivateRoom = () =>{
+      dispatch(createNewRoom())
+    }
+
+    if (roomId !== null && !error) {
+      history.push(`/rooms/${roomId}`)
     }
 
     return (

@@ -1,84 +1,58 @@
 import React, {useEffect} from "react";
 import APIRequestHandler from "../utils/ApiRequestHandler";
 import { useDispatch, useSelector } from 'react-redux'
-import {fetchGameStatus, gamesSelector} from '../slices/GameStore'
+import {addPlayerToRoom, useRoomState, roomCreated, setCurrentPlayerReady, setGames} from '../store/store'
 import Socket from '../utils/Socket'
+import { useParams, useHistory } from "react-router-dom";
+import Spinner from 'react-bootstrap/Spinner'
+import PlayerCache from "../utils/PlayerCache";
 
 const WaitingRoom  = () => {
 
+    console.debug('In WaitingRoom render()')
+
     const dispatch = useDispatch()
-    const { gameStatus } = useSelector(gamesSelector)
+    const history = useHistory()
+    const { error, roomState, roomId } = useRoomState()
 
-    useEffect(async() => {
-        // code to run on component mount
-         APIRequestHandler.addPlayer()
-            .then((json) => {
-                console.log(json);
-                localStorage.setItem('token',JSON.stringify(json.token));
-                localStorage.setItem('playerId',JSON.stringify(json.id));
-                //Socket.connect();
-                Socket.authenticate();
-                dispatch(fetchGameStatus())
-            })
-            .catch((error) =>{
-                console.log('error inside waiting room add player', error)
-                alert(error.error);
-            })
-    }, [])
-
-
-    const updatePlayerStatus = () => {
-        const playerStatus = JSON.stringify({
-            ready: true
-        });
-
-        APIRequestHandler.updatePlayerState(playerStatus)
-            .then((json) => {
-                console.log(json)
-            })
-            .catch((error) =>{
-                alert(error.error);
-            })
-
-
-
+    if (error) {
+        alert('There was an error joining the room. Please create a new room.')
+        history.push('/')
     }
+
+
+    const info = PlayerCache.getPlayerInfo()
+    const {id} = info
+    console.debug('playerInfoFromLocalStorage')
+    console.debug(id)
+    console.debug(roomState)
+    const {ready} = roomState.current.players[id]
+
+
+    const togglePlayerReady = () => {
+        const newReady = !ready
+        dispatch(setCurrentPlayerReady(roomId, newReady))
+    }
+
+    const isHost = () => roomState.current.host === id
 
     const addGames= () =>{
         //TODO CHANGE FOR ACTUAL GAME SELECTION ALL THIS SECTION
-        const playerId = JSON.parse(localStorage.getItem('playerId'));
-        if(gameStatus.current.host === playerId){
-            const games = JSON.stringify({
-                games: [
-                    {
-                        type: 'test',
-                        rounds: 1,
-                    },
-                ]
-            });
-
-            APIRequestHandler.addGames(games)
-                .then( (response) =>{
-                    console.log('success adding games')
-                    console.log(response)
-                })
-                .catch((error) =>{
-                    console.log(error)
-                    alert(error);
-                })
-        }
+        dispatch(setGames(roomId, {
+            games: [
+                {
+                    type: 'test',
+                    rounds: 1,
+                },
+            ]
+        }))
     }
-
-    const isHost=  ()=>{
-        const playerId = JSON.parse(localStorage.getItem('playerId'));
-        return gameStatus.current.host === playerId
-    }
-
 
     return (
             <div>
-                <button onClick={addGames} className='roomCreateBtn'>Add Games</button>
-                 <button onClick={updatePlayerStatus} className='roomCreateBtn'>Ready</button>:
+                {isHost() ? <button onClick={addGames} className='roomCreateBtn'>Add Games</button> : null}
+                
+                 <button onClick={togglePlayerReady} className='roomCreateBtn'>Ready</button>:
             </div>
         );
 
