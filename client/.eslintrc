@@ -30,6 +30,8 @@
         "no-param-reassign": "off",
         "import/no-cycle": "off",
         "prefer-promise-reject-errors": "off",
-        "class-methods-use-this": "off"
+        "class-methods-use-this": "off",
+        "no-console": ["warn", { "allow": ["debug", "error"] }],
+        "no-alert": "off"
     }
 }

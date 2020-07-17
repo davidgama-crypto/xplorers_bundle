@@ -13,7 +13,7 @@ const Timer = (props) => {
   }, [count]);
 
   useEffect(() => () => {
-    console.log('unmounting...');
+    console.debug('unmounting...');
     clearInterval(id.current);
   }, []);
 

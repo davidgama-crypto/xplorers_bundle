@@ -10,7 +10,7 @@ const TestGame = () => {
   const { roomState } = useRoomState();
 
   const endTimeFunction = () => {
-    console.log('endTimeFunction');
+    console.debug('endTimeFunction');
   };
 
   const phaseRenderer = () => {
