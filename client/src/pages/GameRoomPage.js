@@ -41,7 +41,14 @@ const GameRoomPage = () => {
   }
 
   const roomIsReady = () => {
-    return roomId !== null && roomState !== null && !loading && !error
+    return roomId !== null 
+    && roomState !== null 
+    && !loading && !error 
+    && PlayerCache.cachedInfoExists() 
+    && PlayerCache.playerTokenExists() 
+    && roomState.current !== undefined 
+    && roomState.current.players !== undefined
+    && roomState.current.players[PlayerCache.getPlayerInfo().id] !== undefined
   }
 
   if (!roomIsReady()) {

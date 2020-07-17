@@ -60,21 +60,21 @@ const WaitingRoom  = () => {
 
                 {isHost() ? <button onClick={addGames} className='roomCreateBtn'>Add Games</button> : null}
                 
-                 <button onClick={togglePlayerReady} className='roomCreateBtn'>Ready</button>:
-
+                 <button onClick={togglePlayerReady} className='roomCreateBtn'>Ready</button>
+                <h1> Player Ready={String(ready)}</h1>
                 <h1>Users: {playerIds.length}</h1>
                 <ul>
-                    {playerIds.map(e => {
+                    {playerIds.map((e, i) => {
                         const playerInfo = players[e]
                         const {displayName, avatar} = playerInfo
                         return (
-                            <li>{`${e}:${displayName}:${avatar}`}</li>
+                            <li key={i}>{`${e}:${displayName}:${avatar}`}</li>
                         )
                     })} 
                 </ul>
                 <h1>Selected Games: {gameData.length}</h1>
                 <ul>
-                    {gameData.map(e => <li>{e.type}</li>)}
+                    {gameData.map((e, i) => <li key={i}>{e.type}</li>)}
                 </ul>
             </div>
         );

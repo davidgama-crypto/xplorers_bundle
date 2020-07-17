@@ -110,7 +110,7 @@ export function setCurrentPlayerReady(roomId, ready) {
   return async (dispatch) => {
     try {
       dispatch(roomStateUpdating())
-      await APIRequestHandler.updatePlayerState(roomId, id, {
+      await APIRequestHandler.updatePlayerInfo(roomId, id, {
         ready
       }, token)
 
