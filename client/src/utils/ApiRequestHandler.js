@@ -25,8 +25,7 @@ class APIRequestHandler {
 
 
     // generates the token
-    async addPlayer(){
-        const roomId = JSON.parse(localStorage.getItem('roomId'));
+    async addPlayer(roomId){
 
         const playerInfo = JSON.stringify({
             displayName: 'DefaultName',

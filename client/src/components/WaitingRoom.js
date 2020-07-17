@@ -9,7 +9,7 @@ const WaitingRoom  = () => {
     const dispatch = useDispatch()
     const { gameStatus } = useSelector(gamesSelector)
 
-    useEffect( () => {
+    useEffect(async() => {
         // code to run on component mount
          APIRequestHandler.addPlayer()
             .then((json) => {
@@ -21,7 +21,7 @@ const WaitingRoom  = () => {
                 dispatch(fetchGameStatus())
             })
             .catch((error) =>{
-                console.log(error)
+                console.log('error inside waiting room add player', error)
                 alert(error.error);
             })
     }, [])
