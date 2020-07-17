@@ -1,11 +1,8 @@
-import React, {useEffect} from "react";
-import APIRequestHandler from "../utils/ApiRequestHandler";
-import { useDispatch, useSelector } from 'react-redux'
-import {addPlayerToRoom, useRoomState, roomCreated, setCurrentPlayerReady, setGames} from '../store/store'
-import Socket from '../utils/Socket'
-import { useParams, useHistory, Redirect } from "react-router-dom";
-import Spinner from 'react-bootstrap/Spinner'
+import React from "react";
+import { useDispatch } from 'react-redux'
+import {useRoomState, setCurrentPlayerReady, setGames} from '../store/store'
 import PlayerCache from "../utils/PlayerCache";
+import {useHistory, Redirect} from 'react-router-dom'
 
 const WaitingRoom  = () => {
 
@@ -27,14 +24,13 @@ const WaitingRoom  = () => {
     // we did all the validation in the GameRoomPage
     const info = PlayerCache.getPlayerInfo()
     const {id} = info
-    console.debug('playerInfoFromLocalStorage')
-    console.debug(id)
-    console.debug(roomState)
+    
     const {current, gameData} = roomState
     const {players, host} = current
     const {ready} = players[id]
     const playerIds = Object.keys(players)
-    const numberPlayers = playerIds.length
+    const numberOfPlayers = playerIds.length
+    const numberOfGames = gameData.length
 
     const togglePlayerReady = () => {
         const newReady = !ready
@@ -56,20 +52,23 @@ const WaitingRoom  = () => {
     }
 
     // TODO: replace selected games and user list with actual components
+    const disableReady = () => {
+        return numberOfPlayers === 1 || numberOfGames === 0
+    }
     return (
             <div>
 
                 {isHost() ? <button onClick={addGames} className='roomCreateBtn'>Add Games</button> : null}
                 
-                <button onClick={togglePlayerReady} className='roomCreateBtn' disabled={numberPlayers === 1}>{ ready ? "Not Ready" : "Ready"}</button>
+                <button onClick={togglePlayerReady} className='roomCreateBtn' disabled={disableReady()}>{ ready ? "Not Ready" : "Ready"}</button>
                 <h1> Player Ready={String(ready)}</h1>
-                <h1>Users: {numberPlayers}</h1>
+                <h1>Users: {numberOfPlayers}</h1>
                 <ul>
                     {playerIds.map((e, i) => {
                         const playerInfo = players[e]
-                        const {displayName, avatar} = playerInfo
+                        const {displayName, avatar, ready} = playerInfo
                         return (
-                            <li key={i}>{`${e}:${displayName}:${avatar}`}</li>
+                            <li key={i}>{`${e}:${displayName}:${avatar}:ready=${ready}`}</li>
                         )
                     })} 
                 </ul>

@@ -40,6 +40,7 @@ const GameRoomPage = () => {
     ) 
   }
 
+  // Determines if a room is ready to be rendered
   const roomIsReady = () => {
     return roomId !== null 
     && roomState !== null 
@@ -72,39 +73,7 @@ const GameRoomPage = () => {
 
   return (
     <ActiveGameRenderer />
-)
-
-  // if (error) {
-  //     alert('There was an error joining the room. Please create a new room.')
-  //     history.push('/')
-  // }
-
-  // console.debug('Game Room is already loaded and player is connected')
-  // console.debug(roomState)
-
-  // const {status, game } = roomState.current
-
-  // if (status === 'waiting') {
-  //     return <WaitingRoom />
-  // }
-
-  // const {type} = roomState.gameData[game]
-
-  // const gameTypeRenderer = (type) => {
-  //     switch(type) {
-  //         case "test":
-  //             return <TestGame />
-  //         default:
-  //             alert(`Unsupported game type=${type}`)
-  //             history.push('/')
-  //     }
-  // }
-
-  // return (
-  //     <div>{
-  //         gameTypeRenderer(type)
-  //     }</div>
-  // )
+  )
 };
 
 export default GameRoomPage;
