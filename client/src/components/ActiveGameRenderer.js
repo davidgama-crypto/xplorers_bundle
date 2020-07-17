@@ -1,6 +1,5 @@
 import React from "react"
 import { useRoomState} from '../store/store'
-import { useDispatch } from 'react-redux'
 import TestGame from "./TestGame"
 import Spinner from 'react-bootstrap/Spinner'
 
@@ -9,7 +8,7 @@ const ActiveGameRenderer = () => {
   console.debug('In ActiveGameRenderer render()')
 
 
-  const { error, roomState, roomId } = useRoomState()
+  const { roomState } = useRoomState()
   const {gameData, current} = roomState
 
   const currentGame = gameData[current.game]

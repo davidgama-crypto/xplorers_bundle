@@ -1,7 +1,7 @@
 import React from "react";
 import PlayerScore from "./PlayerScore";
 import {
-    reconnectPlayerToRoom, useRoomState, roomCreated, playerJoiningRoom,
+    useRoomState
   } from '../store/store';
 const LeaderBoard = (props) => {
 
