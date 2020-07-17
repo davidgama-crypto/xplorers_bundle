@@ -1,6 +1,6 @@
 import React from 'react';
 import logo from '../resources/bundleLogo.png';
-import '../css/PlayerScore.css';
+import './PlayerScore.css';
 
 const PlayerScore = (props) => (
   <div className="playerScoreDiv">

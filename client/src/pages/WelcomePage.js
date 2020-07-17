@@ -9,7 +9,7 @@ import manAvatar from '../resources/man.png';
 import pigAvatar from '../resources/pig.png';
 import womanAvatar from '../resources/woman.png';
 import logo from '../resources/bundleLogo.png';
-import '../css/WelcomePage.css';
+import './WelcomePage.css';
 
 const WelcomePage = () => {
   const dispatch = useDispatch();
