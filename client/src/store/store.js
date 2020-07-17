@@ -26,8 +26,9 @@ const gameRoom = createSlice({
       state.error = null
     },
     roomErrored: (state, {payload}) => {
-      console.debug(payload)
-      state.error = payload
+      state.error = {
+        message: payload.message.toString()
+      }
       state.loading = false
     }
   }
@@ -52,7 +53,8 @@ export function createNewRoom() {
       dispatch(roomCreated(roomId))
     } catch(e) {
       // catch any errors then set the room state as errored
-      dispatch(roomErrored(e))
+      console.error(e)
+      dispatch(roomErrored(new Error('Something went wrong while creating the room')))
     }
   }
 }
@@ -94,7 +96,8 @@ export function addPlayerToRoom(roomId) {
       dispatch(roomStateUpdated(roomState))
     } catch(e) {
       // catch any errors then set the room state as errored
-      dispatch(roomErrored(e))
+      console.error(e)
+      dispatch(roomErrored(new Error('Something went wrong while player was joining the room')))
     }
   }
 }
@@ -112,7 +115,8 @@ export function setCurrentPlayerReady(roomId, ready) {
       }, token)
 
     } catch(e) {
-      dispatch(roomErrored(e))
+      console.error(e)
+      dispatch(roomErrored(new Error('Something went wrong while toggling player ready')))
 
     }
   }
@@ -158,7 +162,8 @@ export function reconnectPlayerToRoom(roomId) {
     } catch(e) {
       PlayerCache.clearPlayerToken()
       // catch any errors then set the room state as errored
-      dispatch(roomErrored(e))
+      console.error(e)
+      dispatch(roomErrored(new Error('Something went wrong while reconnecting player')))
     }
   }
 }

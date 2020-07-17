@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { useParams, useHistory, Redirect } from 'react-router-dom';
 import Spinner from 'react-bootstrap/Spinner';
@@ -9,6 +9,7 @@ import {
   reconnectPlayerToRoom, useRoomState, roomCreated, addPlayerToRoom,
 } from '../store/store';
 import styles from './GameRoomPage.module.css';
+import ActiveGameRender from '../components/ActiveGameRenderer';
 
 const GameRoomPage = () => {
   console.debug('In GameRoomPage render()');
@@ -18,14 +19,33 @@ const GameRoomPage = () => {
   const { error, loading, roomState, roomId } = useRoomState()
   const urlParams = useParams()
 
+  // If we're missing state needed for this room
+  // dispatch actions conditionally to trigger loading of that state
+  // at the end of render
+  useEffect(() => {
+    if (roomId === null) {
+      dispatch(roomCreated(urlParams.roomId))
+    } else if (roomState === null) {
+      dispatch(addPlayerToRoom(roomId))
+    }
+  })
+
 
   if (error) {
-    alert(error)
-    history.push('/')
+    alert(error.message)
+    return (
+      <>
+        <Redirect to="/" />
+      </>
+    ) 
   }
 
-  if (loading) {
-      console.log('room is loading')
+  const roomIsReady = () => {
+    return roomId !== null && roomState !== null && !loading && !error
+  }
+
+  if (!roomIsReady()) {
+      console.debug('room is not ready')
       return (
         <>
           <Spinner animation="border" />
@@ -33,43 +53,18 @@ const GameRoomPage = () => {
       )
   }
 
-  if (roomId === null) {
-
-      console.debug('Setting roomId to URL params')
-
-      dispatch(roomCreated(urlParams.roomId))
-      return (
-        <>
-          <Spinner animation="border" />
-        </>
-      )
-  }
-
+  const {status} = roomState.current
   
 
-  if (roomState === null || !roomState.current) {
-
-      console.debug('No room data loaded, loading room')
-
-      console.debug('playerInfo does not exist, adding a new player to the room')
-      dispatch(addPlayerToRoom(roomId))
-
-      // // if there are cached credentials, reconnect to room
-      // // if there are no cached credentials, add new player
-      // if (PlayerCache.playerTokenExists()) {
-      //     console.debug('playerInfo already exists, attempting to reconnect')
-      //     dispatch(reconnectPlayerToRoom(roomId))
-      // } else {
-      //     console.debug('playerInfo does not exist, adding a new player to the room')
-      //     dispatch(addPlayerToRoom(roomId))
-      // }
-
-      return <Spinner animation="border" />
+  if (status === 'waiting') {
+    console.debug('Room is in waiting status')
+    return <WaitingRoom />
   }
 
+  console.debug('Room is active, rendering ActiveGameRender')
 
   return (
-    <div>done</div>
+    <ActiveGameRender />
 )
 
   // if (error) {

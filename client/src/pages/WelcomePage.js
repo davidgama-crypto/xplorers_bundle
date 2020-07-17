@@ -9,7 +9,8 @@ import logo from '../resources/bundleLogo.png';
 import '../css/WelcomePage.css'
 import {useDispatch} from "react-redux";
 import {createNewRoom, useRoomState} from '../store/store'
-import { useHistory } from "react-router-dom";
+import { useHistory, Redirect } from "react-router-dom";
+import Spinner from 'react-bootstrap/Spinner'
 
 
 const WelcomePage = () => {
@@ -25,7 +26,11 @@ const WelcomePage = () => {
     }
 
     if (roomId !== null && !error) {
-      history.push(`/rooms/${roomId}`)
+      return (
+          <>
+            <Redirect to={`/rooms/${roomId}`} />
+          </>
+      )
     }
 
     return (
