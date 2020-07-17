@@ -62,15 +62,17 @@ class Socket{
         }
     }
 
-    authenticate = () =>{
-        console.log('on authenticate client')
-        const playerId =  JSON.parse(localStorage.getItem('playerId'));
-        const token =  JSON.parse(localStorage.getItem('token'));
-        const roomId = JSON.parse(localStorage.getItem('roomId'));
-
-        this.socket.emit('authenticate', {
-            playerId:playerId,roomId:roomId,token:token
+    authenticate = async({roomId, playerId, token}) =>{
+        return new Promise(resolve => {
+            this.socket.emit('authenticate', {
+                playerId, roomId, token
+            }, () => {
+                console.debug('successfully authenticated socket connection')
+                resolve()
+            })
         })
+   
+        
     }
 
 

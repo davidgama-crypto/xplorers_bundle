@@ -8,6 +8,8 @@ import {
 } from "react-router-dom";
 import WelcomePage from "./pages/WelcomePage";
 import GameRoomPage from './pages/GameRoomPage';
+import { Provider } from 'react-redux';
+import store from './store/store'
 
 
 class App extends Component {
@@ -22,6 +24,8 @@ class App extends Component {
 
     render() {
         return (
+            <Provider store={store}>
+
             <Router>
             <div className="App">
                 <hr />
@@ -31,6 +35,8 @@ class App extends Component {
                 </Switch>
             </div>
         </Router>
+        </Provider>
+
         )
     }
 }

@@ -1,6 +1,6 @@
 import _ from 'lodash'
 
-const request = async (url, options, addAuth=false) => {
+const request = async (url, options) => {
     const fetchOptions = _.merge(
         {
             headers: {

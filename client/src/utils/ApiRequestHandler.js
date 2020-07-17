@@ -1,6 +1,16 @@
 import request from "./request";
 
 class APIRequestHandler {
+
+    async createNewRoom() {
+        const  roomInformation = (await request(
+            `/api/rooms`,
+            {
+                method: 'GET',
+            }
+        ))
+        return roomInformation;
+    }
     async getRoomId(){
         const  roomInformation = (await request(
             `/api/rooms`,
@@ -12,11 +22,14 @@ class APIRequestHandler {
     }
 
     // requires auth
-    async getGameStatus(roomId){
+    async getRoomState(roomId, token){
         const response  = await request(
             `/api/rooms/${roomId}`,
             {
-                method: 'GET'
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
             }
         )
 

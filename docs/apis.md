@@ -51,7 +51,7 @@ Get the current room's state
 Request:
 
 Headers:
-Authorization: Bearer <JWT> // check if token valid and UID is in the room
+Authorization: Bearer <JWT> // check if token valid and playerId is in the room
 
 Response:
 
@@ -72,7 +72,7 @@ If player, can update their playerState
 Request:
 
 Headers:
-Authorization: Bearer <JWT> // check if token valid and UID is in the room
+Authorization: Bearer <JWT> // check if token valid and playerId is in the room
 
 Body:
 {
@@ -125,7 +125,7 @@ POST /api/rooms/:roomId/players
 
 Description:
 
-player joins/rejoins the room, get JWT with UID
+player joins/rejoins the room, get JWT with playerId
 
 Request:
 Body:
@@ -138,7 +138,7 @@ Response:
 Body:
 
 {
-  "uid": "rasdlkjglkj1l23jlksdjl",  // cache payload in localstorage
+  "id": "rasdlkjglkj1l23jlksdjl",  // cache payload in localstorage
   "token": "asdlkjlkjasda.asdgasd.asd.."
   "displayName": "DefaultName",
   "avatar": "pig",
@@ -149,7 +149,7 @@ Body:
 
 Notes:
 
-- this should also add the UID to room state with player info
+- this should also add the playerId to room state with player info
 - updates to room state should trigger socket IO push with new room state to client
 
 ```
@@ -219,7 +219,7 @@ Body:
 
 Notes:
 
-- this should also add the UID to room state with player info
+- this should also add the playerId to room state with player info
 - updates to room state should trigger socket IO push with new room state to client
 
 
@@ -232,12 +232,12 @@ Description:
 player leaves the room
 
 -> this should be handled via socket io close/disconnect event handler
--> remove the uid and player data from the room
+-> remove the playerId and player data from the room
 
 
 Notes:
 
-- this should also remove the UID to room state with player info
+- this should also remove the playerId to room state with player info
 - updates to room state should trigger socket IO push with new room state to client
 
 

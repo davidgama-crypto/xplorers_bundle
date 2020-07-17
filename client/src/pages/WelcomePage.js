@@ -7,26 +7,26 @@ import pigAvatar from '../resources/pig.png';
 import womanAvatar from '../resources/woman.png';
 import logo from '../resources/bundleLogo.png';
 import '../css/WelcomePage.css'
-import APIRequestHandler from "../utils/ApiRequestHandler";
-import {initialState} from "../slices/GameStore";
-import {useDispatch} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
+import {startNewGame} from '../store/store'
+import { useHistory } from "react-router-dom";
 
 
-const WelcomePage = (props) => {
+const WelcomePage = () => {
 
     const dispatch = useDispatch()
+    const history = useHistory()
 
-    const initRoom = async () =>{
-
-        const roomInfo = await APIRequestHandler.getRoomId()
-        console.log('fetchedRoomInfo: ' , roomInfo)
-
-        localStorage.setItem('roomId',roomInfo.roomId)
-        dispatch(initialState())
-        props.history.push("/rooms/"+ roomInfo.roomId);
+    const createPrivateRoom = () =>{
+        dispatch(startNewGame())
     }
+    const {roomState, loading, error} = useSelector(state => state)
+    console.debug(loading,roomState, error)
 
-
+    if (roomState.current && roomState.current.status === 'waiting' && roomState.id) {
+      const {id} = roomState
+      history.push(`/rooms/${roomState.id}`)
+    }
 
     return (
         <div>
@@ -55,7 +55,7 @@ const WelcomePage = (props) => {
                             <img className='avatar' src={womanAvatar} alt="Avatar" />
                         </div>
                         <div>
-                            <button onClick={initRoom} className='roomCreateBtn'>Create private room</button>
+                            <button onClick={createPrivateRoom} className='roomCreateBtn' disabled={loading}>Create private room</button>
 
                         </div>
                     </div>

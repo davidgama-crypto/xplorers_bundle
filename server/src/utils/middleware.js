@@ -8,10 +8,12 @@ function verifyJwt(req, res, next) {
   } else {
     const fields = token.split(' ');
     if (fields.length !== 2) {
-      res.sendStatus(403);
+      res.status(403).send({
+        error: 'Authorization did not include Bearer',
+      });
       return;
     }
-    const jwtToken = fields[0];
+    const jwtToken = fields[1];
     try {
       const payload = jwt.verify(jwtToken, JWT_SECRET);
 
@@ -19,7 +21,9 @@ function verifyJwt(req, res, next) {
       next();
     } catch (err) {
       console.error(err);
-      res.sendStatus(403);
+      res.status(403).send({
+        error: err.message,
+      });
     }
   }
 }
