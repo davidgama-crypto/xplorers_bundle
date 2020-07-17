@@ -1,8 +1,8 @@
 import React from "react"
 
-const ActiveGameRender = () => {
+const ActiveGameRenderer = () => {
 
 return <div>Rendering games</div>
 }
 
-export default ActiveGameRender
+export default ActiveGameRenderer

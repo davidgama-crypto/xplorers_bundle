@@ -125,11 +125,13 @@ POST /api/rooms/:roomId/players
 
 Description:
 
-player joins/rejoins the room, get JWT with playerId
+player joins the room, get JWT with playerId
 
 Request:
 Body:
 {
+  "id": "asdasdasd", // join the room
+  "token": "asdasdf", // if this info is sent just use this token
   "displayName": "DefaultName", // fetch from localstorage cache
   "avatar": "pig",
 }

@@ -19,9 +19,10 @@ class RoomsController {
     return GameRoom.findByRoomId(roomId);
   }
 
-  static async createNewPlayerForRoom(roomId, displayName, avatar) {
+  static async createNewPlayerForRoom(roomId, playerInfo) {
     const room = await RoomsController.getRoomById(roomId);
-    const newPlayer = new Player(displayName, avatar);
+
+    const newPlayer = new Player(playerInfo);
     room.addPlayerToRoom(newPlayer.id, newPlayer);
     await room.save();
     return newPlayer;

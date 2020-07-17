@@ -34,6 +34,7 @@ const WaitingRoom  = () => {
     const {players, host} = current
     const {ready} = players[id]
     const playerIds = Object.keys(players)
+    const numberPlayers = playerIds.length
 
     const togglePlayerReady = () => {
         const newReady = !ready
@@ -60,9 +61,9 @@ const WaitingRoom  = () => {
 
                 {isHost() ? <button onClick={addGames} className='roomCreateBtn'>Add Games</button> : null}
                 
-                 <button onClick={togglePlayerReady} className='roomCreateBtn'>Ready</button>
+                <button onClick={togglePlayerReady} className='roomCreateBtn' disabled={numberPlayers === 1}>{ ready ? "Not Ready" : "Ready"}</button>
                 <h1> Player Ready={String(ready)}</h1>
-                <h1>Users: {playerIds.length}</h1>
+                <h1>Users: {numberPlayers}</h1>
                 <ul>
                     {playerIds.map((e, i) => {
                         const playerInfo = players[e]

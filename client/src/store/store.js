@@ -59,20 +59,18 @@ export function createNewRoom() {
   }
 }
 
-// addPlayerToRoom(roomId): adds a new user to the given roomId
+// playerJoiningRoom(roomId): adds a new user to the given roomId
 // if there is cached player info on the browser, use that as basis for the request
-export function addPlayerToRoom(roomId) {
-  const info = {displayName: 'defaultUser', avatar: 'pig'}
+export function playerJoiningRoom(roomId) {
+  let info = {displayName: 'defaultUser', avatar: 'pig'}
 
   if (PlayerCache.cachedInfoExists()) {
-    const {displayName, avatar} = PlayerCache.getPlayerInfo()
-    info.displayName = displayName
-    info.avatar = avatar
+    info = PlayerCache.getPlayerInfo()
   }
 
   return async (dispatch) => {
     try {
-      console.debug('dispatching room/addPlayerToRoom')
+      console.debug('dispatching room/playerJoiningRoom')
 
       // set status to loading
       dispatch(roomStateUpdating())
@@ -136,38 +134,6 @@ export function setGames(roomId, games) {
     }
   }
 }
-
-// reconnectPlayertoRoom(roomId): attempts to reconnect the player to the current room
-// if this reconnect fails, the playerToken should be completely cleared
-export function reconnectPlayerToRoom(roomId) {
-  const {id} = PlayerCache.getPlayerInfo()
-  const token = PlayerCache.getPlayerToken()
-  return async (dispatch) => {
-    try {
-      console.debug('dispatching room/reconnectPlayerToRoom')
-      // set status to loading
-      dispatch(roomStateUpdating())
-
-      // with fetched user info authenticate via socket connection
-      // if this rejects, then we should clear the player token
-      Socket.authenticate({
-        playerId: id,
-        roomId, 
-        token
-      })
-      // load the gameRoom info via API + token
-      const roomState = await APIRequestHandler.getRoomState(roomId, token)
-      // update the state with the fetched room state
-      dispatch(roomStateUpdated(roomState))
-    } catch(e) {
-      PlayerCache.clearPlayerToken()
-      // catch any errors then set the room state as errored
-      console.error(e)
-      dispatch(roomErrored(new Error('Something went wrong while reconnecting player')))
-    }
-  }
-}
-
 
 /* Utility functions */
 

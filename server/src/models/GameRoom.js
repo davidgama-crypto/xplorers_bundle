@@ -66,6 +66,8 @@ class GameRoom {
 
     this.state.current.players[playerId] = playerInfo;
 
+    if (this.getTotalNumberOfPlayers() === 1) this.state.current.host = playerId;
+
     if (this.gameRoomIsWaiting() && this.allPlayersReady()) {
       this.startGameRoom();
     }
@@ -79,6 +81,11 @@ class GameRoom {
   removePlayerFromRoom(playerId) {
     if (this.playerInRoom(playerId)) {
       delete this.state.current.players[playerId];
+
+      if (this.getTotalNumberOfPlayers() > 0) {
+        const anotherPlayer = this.getPlayerIds()[0];
+        this.state.current.host = anotherPlayer;
+      }
     }
   }
 
@@ -99,8 +106,6 @@ class GameRoom {
       this.resetPlayersDone();
       room.next();
       await room.save();
-
-      console.log('triggering timer..............');
     }, 1000 * this.state.current.phaseDuration);
   }
 

@@ -6,10 +6,10 @@ import WaitingRoom from '../components/WaitingRoom';
 import TestGame from '../components/TestGame';
 import PlayerCache from '../utils/PlayerCache';
 import {
-  reconnectPlayerToRoom, useRoomState, roomCreated, addPlayerToRoom,
+  reconnectPlayerToRoom, useRoomState, roomCreated, playerJoiningRoom,
 } from '../store/store';
 import styles from './GameRoomPage.module.css';
-import ActiveGameRender from '../components/ActiveGameRenderer';
+import ActiveGameRenderer from '../components/ActiveGameRenderer';
 
 const GameRoomPage = () => {
   console.debug('In GameRoomPage render()');
@@ -23,10 +23,10 @@ const GameRoomPage = () => {
   // dispatch actions conditionally to trigger loading of that state
   // at the end of render
   useEffect(() => {
-    if (roomId === null) {
+    if (roomId === null && !loading) {
       dispatch(roomCreated(urlParams.roomId))
-    } else if (roomState === null) {
-      dispatch(addPlayerToRoom(roomId))
+    } else if (roomState === null && !loading) {
+      dispatch(playerJoiningRoom(roomId))
     }
   })
 
@@ -71,7 +71,7 @@ const GameRoomPage = () => {
   console.debug('Room is active, rendering ActiveGameRender')
 
   return (
-    <ActiveGameRender />
+    <ActiveGameRenderer />
 )
 
   // if (error) {
