@@ -1,20 +1,21 @@
 import React from 'react';
+import { useDispatch } from 'react-redux';
 import Timer from './Timer';
-import APIRequestHandler from '../utils/ApiRequestHandler';
-import { useRoomState } from '../store';
+import { useRoomState, playerIsDone, submitPlayerState } from '../store';
 import PlayerCache from '../utils/PlayerCache';
 
 const TestGamePhase = (props) => {
   const { roomId, roomState } = useRoomState();
-  const { id, token } = PlayerCache.getPlayerInfo();
+  const { id } = PlayerCache.getPlayerInfo();
   const { phaseStartTime } = roomState.current;
+  const dispatch = useDispatch();
 
   // Adding player to the game
   const submitGameInfo = async () => {
     const now = Math.floor(Date.now() / 1000); // now in seconds
     const submitTime = now - phaseStartTime;
-    await APIRequestHandler.updatePlayerState(roomId, id, submitTime, token);
-    await APIRequestHandler.updatePlayerInfo(roomId, id, { done: true }, token);
+    dispatch(submitPlayerState(roomId, submitTime));
+    dispatch(playerIsDone(roomId));
   };
 
   const submitted = roomState.current.players[id].done;
