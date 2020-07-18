@@ -1,0 +1,9 @@
+.carouselDiv{
+    max-height: 200px;
+    max-width: 200px;
+    background: white;
+}
+
+.carousel .slide {
+    background: whitesmoke;
+}
