@@ -18,38 +18,36 @@ const WelcomePage = () => {
   if (roomId !== null && !error) {
     return (
       <>
-        <Redirect to={`/rooms/${roomId}`} />
+        <Redirect push to={`/rooms/${roomId}`} />
       </>
     );
   }
 
   return (
-    <div>
-      <div className="content">
-        <div className="gridContainer">
-          <div className="gridItem bundleLogo">
-            <div>
-              <img className="logo" src={logo} alt="Logo" />
-            </div>
-            <div>
-              <h1 className="bundleTitle">Bundle</h1>
-            </div>
+    <div className="content">
+      <div className="gridContainer">
+        <div className="gridItem bundleLogo">
+          <div>
+            <img className="logo" src={logo} alt="Logo" />
           </div>
-          <div className="gridItem">
-            <label className="title">
-              Jump into your favorite multiplayer games with your friends and coworkers
-            </label>
+          <div>
+            <h1 className="bundleTitle">Bundle</h1>
           </div>
-          <div className="avatarGrid">
-            <div className="avatarsDiv">
-              {Avatars.map((avatar) => (
-                <img className="avatar" key={avatar.id} src={avatar.image} alt="" />
-              ))}
-            </div>
-            <div>
-              <button onClick={createPrivateRoom} className="roomCreateBtn" disabled={loading}>Create private room</button>
+        </div>
+        <div className="gridItem">
+          <label className="title">
+            Jump into your favorite multiplayer games with your friends and coworkers
+          </label>
+        </div>
+        <div className="avatarGrid">
+          <div className="avatarsDiv">
+            {Avatars.map((avatar) => (
+              <img className="avatar" key={avatar.id} src={avatar.image} alt="" />
+            ))}
+          </div>
+          <div>
+            <button onClick={createPrivateRoom} className="roomCreateBtn" disabled={loading}>Create private room</button>
 
-            </div>
           </div>
         </div>
       </div>

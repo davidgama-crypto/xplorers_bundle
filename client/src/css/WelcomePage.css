@@ -1,3 +1,18 @@
+.content {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+.gridContainer {
+    display: grid;
+    grid-template-rows: auto auto auto;
+}
+
+
 .avatar{
     height: 10vh;
 }
@@ -25,13 +40,7 @@
 .bundleTitle{
     margin: 0 40px;
     color: #449DDC;
-}
-
-.gridContainer {
-    display: grid;
-    grid-template-rows: auto auto auto;
-
-
+    font-size: 90px;
 }
 
 .gridItem {
@@ -44,7 +53,7 @@
 }
 
 .logo{
-    height: 20vh;
+    height: 100px;
 }
 
 .roomCreateBtn{
