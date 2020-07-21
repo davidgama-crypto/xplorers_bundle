@@ -1,6 +1,5 @@
 body {
   margin: 0;
-  font-family: 'Balsamiq Sans', cursive;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -8,4 +7,15 @@ body {
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+#root {
+  height: 100vh;
+  width: 100vw;
+  background-image: url('./resources/wallpaper.jpg');
+  background-repeat: repeat;
+  background-size: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }

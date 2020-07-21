@@ -24,7 +24,6 @@ class App extends Component {
 
         <Router>
           <div className="App">
-            <hr />
             <Switch>
               <Route exact path="/" component={WelcomePage} />
               <Route path="/rooms/:roomId" component={GameRoomPage} />
