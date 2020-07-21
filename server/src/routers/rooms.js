@@ -6,7 +6,7 @@ const MissingResourceError = require('../errors/MissingResourceError');
 const NotPermittedError = require('../errors/NotPermittedError');
 
 const router = express.Router();
-const serverURL = process.env.SELF_DOMAIN||'http://localhost:3005';
+const serverURL = process.env.SELF_DOMAIN;
 
 
 
