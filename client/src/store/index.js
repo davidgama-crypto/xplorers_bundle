@@ -40,7 +40,7 @@ export const {
 
 /* Async Thunk Actions */
 
-// startNewGame(): bootstraps a new game room with current user as host player
+// createNewRoom(): create a new GameRoom and set the roomId in the state
 export function createNewRoom() {
   return async (dispatch) => {
     try {
@@ -94,6 +94,32 @@ export function playerJoiningRoom(roomId) {
       // catch any errors then set the room state as errored
       console.error(e);
       dispatch(roomErrored(new Error('Something went wrong while player was joining the room')));
+    }
+  };
+}
+
+// submitPlayerState(roomId, state) : submit arbitrary player state for the phase
+export function submitPlayerState(roomId, state) {
+  const { id, token } = PlayerCache.getPlayerInfo();
+  return async (dispatch) => {
+    try {
+      await APIRequestHandler.updatePlayerState(roomId, id, state, token);
+    } catch (e) {
+      console.error(e);
+      dispatch(roomErrored(new Error('Something went wrong while sending player input')));
+    }
+  };
+}
+
+// playerIsDone(roomId): signals the player is done with the current game phase
+export function playerIsDone(roomId) {
+  const { id, token } = PlayerCache.getPlayerInfo();
+  return async (dispatch) => {
+    try {
+      await APIRequestHandler.updatePlayerInfo(roomId, id, { done: true }, token);
+    } catch (e) {
+      console.error(e);
+      dispatch(roomErrored(new Error('Something went wrong while player completing action')));
     }
   };
 }

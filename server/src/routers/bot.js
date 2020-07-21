@@ -7,9 +7,10 @@ const { WebClient } = require('@slack/web-api');
 const RoomsController = require('../controllers/RoomsController');
 
 // Read necessary env vars for Slack SDK
-const slackSigningSecret = process.env.SLACK_SIGNING_SECRET;
-const slackToken = process.env.SLACK_TOKEN;
-const serverURL = process.env.SELF_DOMAIN;
+const slackSigningSecret = process.env.SLACK_SIGNING_SECRET||'22825902f7b36e363b318ee70e62b14d'
+const slackToken = process.env.SLACK_TOKEN||'xoxb-191101040807-1224995288883-vp8bRd0bfzy2feN3uNyx5jYm'
+const serverURL = process.env.SELF_DOMAIN||'http://localhost:3005'
+
 
 if (!slackSigningSecret || !slackToken || !serverURL) {
   console.error(

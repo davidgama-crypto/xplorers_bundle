@@ -14,7 +14,7 @@ const ActiveGameRenderer = () => {
 
   const renderGameType = (gameType) => {
     switch (gameType) {
-      case 'test':
+      case 'TEST':
         return <TestGame />;
       default:
         return <Spinner />;

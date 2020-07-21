@@ -8,6 +8,8 @@ const NotPermittedError = require('../errors/NotPermittedError');
 const router = express.Router();
 const serverURL = process.env.SELF_DOMAIN||'http://localhost:3005';
 
+
+
 if (!serverURL) {
   console.log('SELF_DOMAIN env var not set!');
   process.exit(1);
