@@ -6,7 +6,7 @@ const MissingResourceError = require('../errors/MissingResourceError');
 const NotPermittedError = require('../errors/NotPermittedError');
 
 const router = express.Router();
-const serverURL = process.env.SELF_DOMAIN;
+const serverURL = process.env.SELF_DOMAIN||'http://localhost:3005';
 
 if (!serverURL) {
   console.log('SELF_DOMAIN env var not set!');
@@ -99,7 +99,8 @@ router.put('/:roomId/games', verifyJwt, async (req, res, next) => {
 // Player joins/rejoins the room
 router.post('/:roomId/players', async (req, res, next) => {
   try {
-    const { displayName, avatar } = req.body;
+    const playerInfo = req.body;
+    const { displayName, avatar } = playerInfo;
     const { roomId } = req.params;
     if (!displayName || !avatar) {
       res.status(400).send({
@@ -107,7 +108,7 @@ router.post('/:roomId/players', async (req, res, next) => {
       });
       return;
     }
-    const player = await RoomsController.createNewPlayerForRoom(roomId, displayName, avatar);
+    const player = await RoomsController.createNewPlayerForRoom(roomId, playerInfo);
     res.send(player);
   } catch (err) {
     console.log(err);

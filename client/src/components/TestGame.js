@@ -1,46 +1,44 @@
-import React from "react";
-import {useSelector} from "react-redux";
-import {fetchGameStatus, gamesSelector} from "../slices/GameStore";
-import GameInstructions from "./GameInstructions";
-import TestGamePhase from "./TestGamePhase";
-import LeaderBoard from "./LeaderBoard";
-import GameRoom from "./GameRoom";
-import APIRequestHandler from "../utils/ApiRequestHandler";
-import Socket from "../utils/Socket";
+import React from 'react';
+import { Redirect } from 'react-router-dom';
+import { useRoomState } from '../store';
+import GameInstructions from './GameInstructions';
+import TestGamePhase from './TestGamePhase';
+import LeaderBoard from './LeaderBoard';
 
 const TestGame = () => {
-    //const dispatch = useDispatch()
-    const { gameStatus } = useSelector(gamesSelector)
+  // const dispatch = useDispatch()
+  const { roomState } = useRoomState();
 
-    const endTimeFunction = () =>{
-        console.log('endTimeFunction');
+  const endTimeFunction = () => {
+    console.debug('endTimeFunction');
+  };
+
+  const phaseRenderer = () => {
+    switch (roomState.current.phase) {
+      case 0:
+        return (
+          <GameInstructions
+            gameTitle="Test Game"
+            gameInstructions="Press the button before the timer runs out! Starting in..."
+            time={roomState.current.phaseDuration}
+            endTime={endTimeFunction}
+          />
+        );
+      case 1:
+        return <TestGamePhase gameTime={roomState.current.phaseDuration} />;
+      case 2:
+        return <LeaderBoard totalScores={roomState.totalScores} />;
+      default:
+        return <Redirect to="/" />;
     }
+  };
 
-    const renderSwitch = () => {
-        switch(gameStatus.current.phase) {
-            case 0:
-                return <GameInstructions gameTitle = {'Test Game'}
-                                gameInstructions = { '1...... 2..... 3.....'}
-                                time={gameStatus.current.phaseDuration}
-                                endTime= {endTimeFunction}
-                            />
-            case 1:
-                return <TestGamePhase gameTime = {gameStatus.current.phaseDuration} />
-            case 2:
-                return <LeaderBoard totalScores = {gameStatus.totalScores} />
-            default:
-                return <GameRoom />
-        }
-    }
+  return (
+    <div>
+      {phaseRenderer()}
+    </div>
 
+  );
+};
 
-    return(
-        <div>
-                {renderSwitch()}
-        </div>
-
-    );
-
-}
-
-export default TestGame
+export default TestGame;

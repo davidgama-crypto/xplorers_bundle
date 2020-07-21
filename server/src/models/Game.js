@@ -19,7 +19,7 @@ class Game {
   static createInitialState(type) {
     let initState;
     switch (type) {
-      case 'test':
+      case 'TEST':
         initState = {};
         break;
       default:
@@ -32,7 +32,7 @@ class Game {
   static phaseDurationsForGame(type) {
     let durations;
     switch (type) {
-      case 'test':
+      case 'TEST':
         durations = [
           5,
           5,
@@ -50,7 +50,7 @@ class Game {
   static calculateScoreForGame(type, playerState) {
     let fn;
     switch (type) {
-      case 'test':
+      case 'TEST':
         // should be a number
         fn = (singlePlayerState) => 10 * singlePlayerState;
         break;
@@ -63,7 +63,7 @@ class Game {
   static totalPhasesForType(type) {
     let totalPhases;
     switch (type) {
-      case 'test':
+      case 'TEST':
         totalPhases = 3;
         break;
       default:

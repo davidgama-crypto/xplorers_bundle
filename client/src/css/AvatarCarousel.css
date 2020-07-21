@@ -1,9 +1,17 @@
+
 .carouselDiv{
-    max-height: 200px;
+    max-height: fit-content;
     max-width: 200px;
     background: white;
 }
 
 .carousel .slide {
-    background: whitesmoke;
+    background: white;
+}
+
+
+#playerNameInput{
+    border: 4px solid #000000;
+    box-sizing: border-box;
+    border-radius: 57px;
 }

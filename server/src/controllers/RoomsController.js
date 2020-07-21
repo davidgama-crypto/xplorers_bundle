@@ -19,9 +19,10 @@ class RoomsController {
     return GameRoom.findByRoomId(roomId);
   }
 
-  static async createNewPlayerForRoom(roomId, displayName, avatar) {
+  static async createNewPlayerForRoom(roomId, playerInfo) {
     const room = await RoomsController.getRoomById(roomId);
-    const newPlayer = new Player(displayName, avatar);
+
+    const newPlayer = new Player(playerInfo);
     room.addPlayerToRoom(newPlayer.id, newPlayer);
     await room.save();
     return newPlayer;
@@ -57,8 +58,13 @@ class RoomsController {
 
   static async updateRoomGames(roomId, playerId, gamesToAdd) {
     const room = await RoomsController.getRoomById(roomId);
+    console.log('gamesToAdd:'  +gamesToAdd);
     if (!room.playerIsHost(playerId)) throw new NotPermittedError(`playerId=${playerId} is not host of roomId=${roomId}`);
-    gamesToAdd.forEach((e) => room.addGame(e.type, e.rounds));
+    if(gamesToAdd.length === 0){
+      room.removeAllGames();
+    }else{
+      gamesToAdd.forEach((e) => room.addGame(e.type, e.rounds));
+    }
     const updatedRoom = await room.save();
     return updatedRoom;
   }

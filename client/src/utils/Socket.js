@@ -1,81 +1,54 @@
-import * as SocketIO from 'socket.io-client'
-import store from '../store'
-import {fetchGameStatus} from "../slices/GameStore";
+import * as SocketIO from 'socket.io-client';
+import store, { roomStateUpdated } from '../store';
 
-class Socket{
-    socket;
+class Socket {
+  constructor() {
+    this.socket = null;
+  }
 
+  connect() {
+    const url = window.location.host.startsWith('localhost')
+      ? 'http://localhost:3000/'
+      : '/';
 
-    socketConnected(){
-        console.log('Socket IO is connected');
+    console.debug(`url: ${url}`);
+    this.socket = SocketIO.connect('/');
+
+    // register listeners
+    this.socket.on('connect', () => console.debug('Socket IO - connect event'));
+    this.socket.on('updated', (state) => {
+      store.dispatch(roomStateUpdated(state));
+    });
+  }
+
+  close() {
+    console.debug('Socket IO - closing....');
+    if (this.socket) {
+      this.socket.close();
+      this.socket = undefined;
     }
+  }
 
-    updateGameStatus(){
-        console.log('Socket IO  - updateGameStatus');
-        store.dispatch(fetchGameStatus());
-    }
+  authenticate({ roomId, playerId, token }) {
+    console.debug(`authenticating socket roomId=${roomId}, playerId=${playerId}, token=${token}`);
 
-
-    connect = () => {
-
-        console.log('in conncect');
-        const playerId =  JSON.parse(localStorage.getItem('playerId'));
-        const token =  JSON.parse(localStorage.getItem('token'));
-        const gameInfo = JSON.parse(localStorage.getItem('document'));
-
-
-        console.log('gameInfo' + gameInfo);
-        console.log(playerId);
-        console.log(token);
-        // if ( !playerId || !token || !gameInfo) {
-        //     return
-        // }
-
-
-        const url = window.location.host.startsWith('localhost')
-            ? 'localhost:3000/'
-            : '/'
-
-        console.log('url: ' + url);
-        this.socket = SocketIO.connect(url)
-
-        // authenticate
-        this.socket.emit('connect', () =>{
-         console.log('emit connected')
-        })
-
-
-
-
-        // register listeners
-        this.socket.on('connect', this.socketConnected);
-        this.socket.on('updated', this.updateGameStatus);
-
-        console.log(this.socket)
-
-    }
-
-    close = () => {
-        if (this.socket) {
-            this.socket.close()
-            this.socket = undefined
+    return new Promise((resolve, reject) => {
+      this.socket.emit('authenticate', {
+        playerId, roomId, token,
+      }, (reply) => {
+        console.debug(`socket authenticate reply=${reply}`);
+        if (reply === 'success') {
+          console.debug('socket auth resolving');
+          resolve(reply);
+        } else {
+          console.debug('socket auth rejecting');
+          reject('Error: socket authenticate failed');
         }
-    }
-
-    authenticate = () =>{
-        console.log('on authenticate client')
-        const playerId =  JSON.parse(localStorage.getItem('playerId'));
-        const token =  JSON.parse(localStorage.getItem('token'));
-        const roomId = JSON.parse(localStorage.getItem('roomId'));
-
-        this.socket.emit('authenticate', {
-            playerId:playerId,roomId:roomId,token:token
-        })
-    }
-
-
-
-
+      });
+    });
+  }
 }
 
-export default new Socket()
+const singleton = new Socket();
+
+export default singleton;

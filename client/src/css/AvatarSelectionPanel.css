@@ -1,0 +1,4 @@
+.avatarSelectionContainer {
+    display: grid;
+    grid-template-rows: auto;
+}

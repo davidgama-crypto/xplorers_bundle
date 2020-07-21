@@ -1,0 +1,61 @@
+.createPlayerDiv{
+    align-content: center;
+    align-items: center;
+    align-self: end;
+}
+
+.gameSelectionDiv{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+.gameSelectionGrid{
+    display: grid;
+    grid-template-rows: auto auto;
+    padding-top: 30px;
+}
+
+.gridWaitingContainer {
+    display: grid;
+    grid-template-rows: 50% 50%;
+    grid-template-columns: 40% auto;
+    grid-template-areas:
+            "games players"
+            "avatars ready"
+}
+
+.item-games {
+    grid-area: games;
+}
+.item-players {
+    grid-area: players;
+}
+.item-avatars {
+    grid-area: avatars;
+}
+.item-ready {
+    grid-area: ready;
+}
+
+.readyBtn {
+    grid-area: item-ready;
+    align-items: center;
+    grid-column-start: 2;
+    grid-column-end: 2;
+    grid-row-start: 3;
+    grid-row-end: 3;
+}
+
+#readyDiv{
+    display: grid;
+    grid-template-columns: 30% auto;
+    grid-template-rows: 40% 40% auto;
+    grid-template-areas:
+            ". ."
+            ". ."
+            ". item-ready";
+    justify-items: center;
+}
+

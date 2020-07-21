@@ -1,87 +1,105 @@
-import React, {useEffect} from "react";
-import APIRequestHandler from "../utils/ApiRequestHandler";
-import { useDispatch, useSelector } from 'react-redux'
-import {fetchGameStatus, gamesSelector} from '../slices/GameStore'
-import Socket from '../utils/Socket'
+import React from 'react';
+import { useDispatch } from 'react-redux';
+import { Redirect } from 'react-router-dom';
+import { useRoomState, setCurrentPlayerReady, setGames } from '../store';
+import PlayerCache from '../utils/PlayerCache';
+import '../css/WaitingPage.css';
+import GameSelectionPanel from './GameSelectionPanel';
+import AvatarSelectionPanel from './AvatarSelectionPanel';
+import PlayersPanel from './PlayersPanel';
 
-const WaitingRoom  = () => {
+const WaitingRoom = () => {
+  console.debug('In WaitingRoom render()');
 
-    const dispatch = useDispatch()
-    const { gameStatus } = useSelector(gamesSelector)
+  const dispatch = useDispatch();
+  const { error, roomState, roomId } = useRoomState();
 
-    useEffect( () => {
-        // code to run on component mount
-         APIRequestHandler.addPlayer()
-            .then((json) => {
-                console.log(json);
-                localStorage.setItem('token',JSON.stringify(json.token));
-                localStorage.setItem('playerId',JSON.stringify(json.id));
-                //Socket.connect();
-                Socket.authenticate();
-                dispatch(fetchGameStatus())
-            })
-            .catch((error) =>{
-                console.log(error)
-                alert(error.error);
-            })
-    }, [])
-
-
-    const updatePlayerStatus = () => {
-        const playerStatus = JSON.stringify({
-            ready: true
-        });
-
-        APIRequestHandler.updatePlayerState(playerStatus)
-            .then((json) => {
-                console.log(json)
-            })
-            .catch((error) =>{
-                alert(error.error);
-            })
-
-
-
-    }
-
-    const addGames= () =>{
-        //TODO CHANGE FOR ACTUAL GAME SELECTION ALL THIS SECTION
-        const playerId = JSON.parse(localStorage.getItem('playerId'));
-        if(gameStatus.current.host === playerId){
-            const games = JSON.stringify({
-                games: [
-                    {
-                        type: 'test',
-                        rounds: 1,
-                    },
-                ]
-            });
-
-            APIRequestHandler.addGames(games)
-                .then( (response) =>{
-                    console.log('success adding games')
-                    console.log(response)
-                })
-                .catch((error) =>{
-                    console.log(error)
-                    alert(error);
-                })
-        }
-    }
-
-    const isHost=  ()=>{
-        const playerId = JSON.parse(localStorage.getItem('playerId'));
-        return gameStatus.current.host === playerId
-    }
-
-
+  if (error) {
+    alert('There was an error joining the room. Please create a new room.');
     return (
-            <div>
-                <button onClick={addGames} className='roomCreateBtn'>Add Games</button>
-                 <button onClick={updatePlayerStatus} className='roomCreateBtn'>Ready</button>:
-            </div>
-        );
+      <>
+        <Redirect to="/" />
+      </>
+    );
+  }
 
-}
+  // we did all the validation in the GameRoomPage
+  const info = PlayerCache.getPlayerInfo();
+  const { id } = info;
+
+  const { current, gameData } = roomState;
+  const { players, host } = current;
+  const { ready } = players[id];
+  const playerIds = Object.keys(players);
+  const numberOfPlayers = playerIds.length;
+  const numberOfGames = gameData.length;
+
+  const togglePlayerReady = () => {
+    const newReady = !ready;
+    dispatch(setCurrentPlayerReady(roomId, newReady));
+  };
+
+  const isHost = () => host === id;
+
+  const addGames = () => {
+    // TODO CHANGE FOR ACTUAL GAME SELECTION ALL THIS SECTION
+    dispatch(setGames(roomId, {
+      games: [
+        {
+          type: 'test',
+          rounds: 1,
+        },
+      ],
+    }));
+  };
+
+  // TODO: replace selected games and user list with actual components
+  const disableReady = () => numberOfPlayers === 1 || numberOfGames === 0;
+  return (
+    <div>
+      <div className="gridWaitingContainer">
+        <div className="games">
+          <GameSelectionPanel isHost={isHost()} />
+        </div>
+        <div className="players">
+          <div>
+            <PlayersPanel />
+          </div>
+          <h1>
+            {`Player ready=${ready}`}
+          </h1>
+          <h1>
+            Users:
+            {numberOfPlayers}
+          </h1>
+          <h1>
+            Selected Games:
+            {gameData.length}
+          </h1>
+          <ul>
+            {gameData.map((e) => <li key={e.type}>{e.type}</li>)}
+          </ul>
+        </div>
+        <div className="avatars createPlayerDiv">
+          <div className="gameSelectionGrid">
+            <h1>
+              Create Player
+            </h1>
+            <div className="gameSelectionDiv">
+              <div>
+                <AvatarSelectionPanel />
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="ready" id="readyDiv">
+          <div className="readyBtn">
+            <button type="button" onClick={togglePlayerReady} className="roomCreateBtn" disabled={disableReady()}>{ ready ? 'Not Ready' : 'Ready'}</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 export default WaitingRoom;
