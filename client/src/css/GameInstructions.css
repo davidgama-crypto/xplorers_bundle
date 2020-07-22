@@ -1,0 +1,34 @@
+
+.gameInstructionsWrapper {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  padding: 20px;
+  grid-template-rows: auto auto auto;
+}
+
+.instructionsSection {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-top: 10px;
+}
+.gameInstructionsTitle{
+  margin: 0 40px;
+  color: #449DDC;
+  font-size: 90px;
+}
+
+.gameInstructionsSubheader {
+  font-size: 50px;
+
+}
+
+.gameInstruction {
+  font-size: 24px;
+  display: block;
+  width: 100%;
+  padding-left: 100px;
+  text-align: start;
+}

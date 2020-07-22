@@ -19,7 +19,10 @@ const TestGame = () => {
         return (
           <GameInstructions
             gameTitle="Test Game"
-            gameInstructions="Press the button before the timer runs out! Starting in..."
+            gameInstructions={[
+              'Press the button as fast as possible',
+              'The faster you push the button, the more points you earn!',
+            ]}
             time={roomState.current.phaseDuration}
             endTime={endTimeFunction}
           />

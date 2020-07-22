@@ -1,21 +1,28 @@
 import React from 'react';
 import Timer from './Timer';
+import '../css/GameInstructions.css';
 
-const GameInstructions = (props) => (
-  <div>
-    <div>
-      <h1 className="bundleTitle">{props.gameTitle}</h1>
-      <h2 className="bundleTitle">How to play:</h2>
+const GameInstructions = ({
+  gameTitle, gameInstructions, time, endTime,
+}) => (
+  <div className="gameInstructionsWrapper">
+    <div className="instructionsSection">
+      <h1 className="gameInstructionsTitle">{gameTitle}</h1>
     </div>
-    <div>
-      <label className="">{props.gameInstructions}</label>
+    <div className="instructionsSection">
+      <h2 className="gameInstructionsSubheader">How to play</h2>
     </div>
-    <div>
+    <div className="instructionsSection">
       <Timer
-        time={props.time}
-        endTime={props.endTime}
+        time={time}
+        endTime={endTime}
       />
     </div>
+    <div className="instructionsSection">
+      {gameInstructions.map((e, i) => <label key={e} className="gameInstruction">{`${i + 1}) ${e}`}</label>)}
+
+    </div>
+
   </div>
 
 );
