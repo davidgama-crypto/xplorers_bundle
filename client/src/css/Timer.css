@@ -1,0 +1,27 @@
+.timerWrapperStacked {
+  display: 'grid';
+  grid-template-rows: auto auto;
+  width: 100px;
+}
+
+.timerWrapperInline {
+  display: flex;
+  width:fit-content;
+}
+
+.clockIcon {
+  width: 50px;
+  height: 50px;
+  margin: 2px 5px;
+}
+
+.centered {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.clockText {
+  font-family: 'Balsamiq Sans', sans-serif;
+  font-size: 20px;
+}
