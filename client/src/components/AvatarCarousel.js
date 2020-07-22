@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Carousel } from 'react-responsive-carousel';
 
 import Avatars from '../utils/Avatars';
@@ -10,19 +10,36 @@ import APIRequestHandler from '../utils/ApiRequestHandler';
 
 const AvatarCarousel = () => {
   const { roomId } = useRoomState();
+  const { avatar } = PlayerCache.getPlayerInfo();
+
+  const findAvatarIdx = (avatarId) => Avatars.findIndex((e) => e.id === avatarId);
+
+  const cachedIdx = findAvatarIdx(avatar);
+  let initState = 0;
+  if (cachedIdx !== -1) initState = cachedIdx;
+
+  const [selectedIdx, setSelected] = useState(initState);
   const { id, token } = PlayerCache.getPlayerInfo();
 
   const onClickItem = async (event, props) => {
+    const avatarId = props.props.children.key;
+    const newIdx = findAvatarIdx(avatarId);
     const playerInfo = {
-      avatar: props.props.children.key,
+      avatar: avatarId,
     };
     await APIRequestHandler.updatePlayerInfo(roomId, id, playerInfo, token);
+    const savedPlayerInfo = PlayerCache.getPlayerInfo();
+    savedPlayerInfo.avatar = props.props.children.key;
+    PlayerCache.cachePlayerInfo(savedPlayerInfo);
+    setSelected(newIdx);
   };
+
   return (
     <Carousel
       showThumbs={false}
       showStatus={false}
       showIndicators={false}
+      selectedItem={selectedIdx}
       className="carouselDiv"
       showArrows
       renderArrowNext={(onClickHandler, hasNext, label) => {
@@ -37,9 +54,9 @@ const AvatarCarousel = () => {
       onClickThumb={onClickItem}
       onChange={onClickItem}
     >
-      {Avatars.map((avatar) => (
-        <div className="slide" key={avatar.id}>
-          <img key={avatar.id} src={avatar.image} className="avatarPic" alt="" />
+      {Avatars.map((currentAvatar) => (
+        <div className="slide" key={currentAvatar.id}>
+          <img key={currentAvatar.id} src={currentAvatar.image} className="avatarPic" alt="" />
         </div>
 
       ))}
