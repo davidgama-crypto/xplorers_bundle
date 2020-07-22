@@ -14,7 +14,6 @@
 .gameSelectionGrid{
     display: grid;
     grid-template-rows: auto auto;
-    padding-top: 30px;
 }
 
 .gameSelectTestDiv{
@@ -35,3 +34,9 @@
 }
 
 
+.avatarSelectionContainer {
+    display: grid;
+    grid-template-rows: auto;
+    height: 100%;
+    width: 100%;
+}

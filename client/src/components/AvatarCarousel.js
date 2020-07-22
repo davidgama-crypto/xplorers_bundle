@@ -1,12 +1,12 @@
+import React from 'react';
+import { Carousel } from 'react-responsive-carousel';
+
 import { Avatars } from '../utils/Avatars';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
 import '../css/AvatarCarousel.css';
 import { useRoomState } from '../store';
 import PlayerCache from '../utils/PlayerCache';
 import APIRequestHandler from '../utils/ApiRequestHandler';
-
-const React = require('react');
-const { Carousel } = require('react-responsive-carousel');
 
 const AvatarCarousel = () => {
   const { roomId } = useRoomState();

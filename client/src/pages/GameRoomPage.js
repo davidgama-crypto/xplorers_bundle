@@ -34,7 +34,7 @@ const GameRoomPage = () => {
     alert(error.message);
     return (
       <>
-        <Redirect to="/" />
+        <Redirect push to="/" />
       </>
     );
   }

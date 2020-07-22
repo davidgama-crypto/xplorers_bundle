@@ -29,7 +29,7 @@ const TestGame = () => {
       case 2:
         return <LeaderBoard totalScores={roomState.totalScores} />;
       default:
-        return <Redirect to="/" />;
+        return <Redirect push to="/" />;
     }
   };
 

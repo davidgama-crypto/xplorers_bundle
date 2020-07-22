@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 import { Redirect } from 'react-router-dom';
 import { useRoomState, setCurrentPlayerReady, setGames } from '../store';
 import PlayerCache from '../utils/PlayerCache';
-import '../css/WaitingPage.css';
+import '../css/WaitingRoom.css';
 import GameSelectionPanel from './GameSelectionPanel';
 import AvatarSelectionPanel from './AvatarSelectionPanel';
 import PlayersPanel from './PlayersPanel';
@@ -18,7 +18,7 @@ const WaitingRoom = () => {
     alert('There was an error joining the room. Please create a new room.');
     return (
       <>
-        <Redirect to="/" />
+        <Redirect push to="/" />
       </>
     );
   }
@@ -56,46 +56,30 @@ const WaitingRoom = () => {
   // TODO: replace selected games and user list with actual components
   const disableReady = () => numberOfPlayers === 1 || numberOfGames === 0;
   return (
-    <div>
-      <div className="gridWaitingContainer">
-        <div className="games">
-          <GameSelectionPanel isHost={isHost()} />
+    <div className="gridWaitingContainer">
+      <div className="games">
+        <GameSelectionPanel isHost={isHost()} />
+      </div>
+      <div className="players">
+        <div>
+          <PlayersPanel />
         </div>
-        <div className="players">
-          <div>
-            <PlayersPanel />
-          </div>
+      </div>
+      <div className="createPlayerDiv">
+        <div className="gameSelectionGrid">
           <h1>
-            {`Player ready=${ready}`}
+            Create Player
           </h1>
-          <h1>
-            Users:
-            {numberOfPlayers}
-          </h1>
-          <h1>
-            Selected Games:
-            {gameData.length}
-          </h1>
-          <ul>
-            {gameData.map((e) => <li key={e.type}>{e.type}</li>)}
-          </ul>
-        </div>
-        <div className="avatars createPlayerDiv">
-          <div className="gameSelectionGrid">
-            <h1>
-              Create Player
-            </h1>
-            <div className="gameSelectionDiv">
-              <div>
-                <AvatarSelectionPanel />
-              </div>
+          <div className="gameSelectionDiv">
+            <div>
+              <AvatarSelectionPanel />
             </div>
           </div>
         </div>
-        <div className="ready" id="readyDiv">
-          <div className="readyBtn">
-            <button type="button" onClick={togglePlayerReady} className="roomCreateBtn" disabled={disableReady()}>{ ready ? 'Not Ready' : 'Ready'}</button>
-          </div>
+      </div>
+      <div className="readyDiv">
+        <div className="readyBtn">
+          <button type="button" onClick={togglePlayerReady} className="roomCreateBtn" disabled={disableReady()}>{ ready ? 'Not Ready' : 'Ready'}</button>
         </div>
       </div>
     </div>
