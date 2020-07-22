@@ -1,17 +1,17 @@
 import React from 'react';
-import logo from '../resources/bundleLogo.png';
 import '../css/PlayerScore.css';
+import AvatarPlayer from './AvatarPlayer';
 
 const PlayerScore = (props) => (
   <div className="playerScoreDiv">
-    <div>
-      <img className="logo" src={logo} alt="Logo" />
+    <div className="avatar playerScoreItems">
+      <AvatarPlayer key={props.playerInfo.playerId} playerInfo={props.playerInfo} />
     </div>
-    <div>
-      <span>{props.name}</span>
+    <div className="playerName playerScoreItems">
+      <h3>{props.name}</h3>
     </div>
-    <div>
-      <span>{props.score}</span>
+    <div className="score playerScoreItems">
+      <h3>{props.score}</h3>
     </div>
   </div>
 

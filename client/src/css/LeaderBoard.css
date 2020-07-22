@@ -1,0 +1,29 @@
+.bundleTitle{
+    margin: 0 40px;
+    color: #449DDC;
+    font-size: 90px;
+}
+
+.items{
+    justify-self: center;
+    align-self: end;
+}
+
+.leaderBoardDiv{
+}
+
+.leaderBoardHeader{
+    display: grid;
+    grid-template-columns: 5% 10% 20% 20% auto 15% 10% 5%;
+    grid-template-rows: 100px;
+    grid-template-areas:
+            ". starsIcons avatar playerName points score crownIcon .";
+}
+
+.playerName {
+    grid-area: playerName;
+}
+
+.score {
+    grid-area: score;
+}
