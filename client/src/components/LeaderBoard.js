@@ -48,17 +48,22 @@ const LeaderBoard = () => {
           setPlayersScores(playerScore)
         ))}
       </div>
-      <div className="goHomeDiv">
-        <button
-          className="goHomeBtn"
-          onClick={() => {
-            dispatch(clearRoom());
-            history.push('/');
-          }}
-        >
-          Play Again
-        </button>
-      </div>
+      {
+        gameIsFinished ? (
+          <div className="goHomeDiv">
+            <button
+              className="goHomeBtn"
+              onClick={() => {
+                dispatch(clearRoom());
+                history.push('/');
+              }}
+            >
+              Play Again
+            </button>
+          </div>
+        ) : null
+      }
+
     </div>
 
   );
