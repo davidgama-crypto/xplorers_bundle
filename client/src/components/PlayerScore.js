@@ -5,7 +5,7 @@ import AvatarPlayer from './AvatarPlayer';
 const PlayerScore = (props) => (
   <div className="playerScoreDiv">
     <div className="avatar playerScoreItems">
-      <AvatarPlayer key={props.playerInfo.playerId} playerInfo={props.playerInfo} />
+      <AvatarPlayer isHost={false} isReady={false} key={props.playerInfo.playerId} playerInfo={props.playerInfo} />
     </div>
     <div className="playerName playerScoreItems">
       <h3>{props.name}</h3>
