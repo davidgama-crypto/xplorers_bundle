@@ -1,18 +1,39 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, { Component } from 'react';
+import 'bootstrap/dist/css/bootstrap.min.css';
+
 import './App.css';
-import Test from "./components/test";
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+} from 'react-router-dom';
+import { Provider } from 'react-redux';
+import Socket from './utils/Socket';
+import WelcomePage from './pages/WelcomePage';
+import GameRoomPage from './pages/GameRoomPage';
+import store from './store';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-      </header>
-      <Test />
+class App extends Component {
+  componentDidMount() {
+    Socket.connect();
+  }
 
-    </div>
-  );
+  render() {
+    return (
+      <Provider store={store}>
+
+        <Router>
+          <div className="App">
+            <Switch>
+              <Route exact path="/" component={WelcomePage} />
+              <Route path="/rooms/:roomId" component={GameRoomPage} />
+            </Switch>
+          </div>
+        </Router>
+      </Provider>
+
+    );
+  }
 }
 
 export default App;

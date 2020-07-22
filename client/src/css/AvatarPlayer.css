@@ -1,0 +1,32 @@
+.avatarPlayerDiv{
+    width: 150px;
+}
+
+
+.avatarPlayerImgDiv{
+    border: 6px solid #000000;
+    box-sizing: border-box;
+    border-radius: 10px;
+    padding: 5px;
+    height: 13vh;
+}
+
+.avatarImg{
+    max-height: 11vh;
+    max-width: 100%;
+    margin: auto;
+    display: block;
+    height: fit-content;
+}
+
+.playerNameDiv{
+    height: 50px;
+}
+
+.isReady {
+    color: green
+}
+
+.isSelf {
+    font-weight: bold;
+}

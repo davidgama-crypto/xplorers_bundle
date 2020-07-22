@@ -1,0 +1,34 @@
+.playerScoreItems{
+    place-self: center;
+}
+
+.starsIcons {
+    grid-area: starsIcons;
+}
+.avatar {
+    grid-area: avatar;
+
+}
+.playerName {
+    grid-area: playerName;
+}
+.points {
+    grid-area: points;
+
+}
+.score {
+    grid-area: score;
+}
+.crownIcon {
+    grid-area: crownIcon;
+}
+
+
+.playerScoreDiv{
+    display: grid;
+    grid-template-columns: 5% 10% 20% 20% auto 15% 10% 5%;
+    grid-template-rows:200px;
+    grid-template-areas:
+            ". starsIcons avatar playerName points score crownIcon .";
+
+}

@@ -4,6 +4,8 @@ class PlayerConnections {
   }
 
   addPlayerConnection(playerId, roomId, socket) {
+    this.removePlayerConnection(socket);
+
     this.playerConnections[playerId] = {
       socket,
       roomId,
@@ -23,9 +25,9 @@ class PlayerConnections {
   }
 
   removePlayerConnection(socket) {
-    const { playerId, info } = this.getInfoForConnection(socket);
-    if (playerId) {
-      const { roomId } = info;
+    const connectionInfo = this.getInfoForConnection(socket);
+    if (connectionInfo && connectionInfo.playerId) {
+      const { roomId, playerId } = connectionInfo;
       socket.leave(roomId);
       delete this.playerConnections[playerId];
     }

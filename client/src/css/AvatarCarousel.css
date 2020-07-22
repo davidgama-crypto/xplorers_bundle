@@ -1,0 +1,50 @@
+
+.carouselDiv{
+    height: 250px;
+    width: 200px;
+    background: white;
+    overflow: auto;
+}
+
+.carousel .slide {
+    background: white;
+}
+
+
+#playerNameInput{
+    border: 4px solid #000000;
+    box-sizing: border-box;
+    border-radius: 57px;
+}
+
+.slide {
+    width: 200px;
+    overflow: visible;
+}
+
+.avatarPic {
+    width: 150px;
+
+}
+
+.arrow {
+    position: absolute;
+    top: calc(50% - 100px);
+    border: 0;
+    background-color: rgba(0,0,0,0);
+    overflow: visible;
+    font-size: 2em;
+    width: 50px;
+}
+button:focus {outline:0;}
+
+.nextArrow {
+    right: -10px;
+    z-index:10;
+}
+
+.prevArrow {
+    left: -10px;
+    z-index:10;
+
+}

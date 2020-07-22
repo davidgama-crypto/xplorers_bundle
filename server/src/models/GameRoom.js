@@ -11,7 +11,6 @@ class GameRoom {
   constructor(roomId = nanoid(), io = global.io) {
     this.id = roomId;
     this.io = io;
-    this.timer = null;
     this.playerConnections = {};
 
     this.state = {
@@ -66,6 +65,8 @@ class GameRoom {
 
     this.state.current.players[playerId] = playerInfo;
 
+    if (this.getTotalNumberOfPlayers() === 1) this.state.current.host = playerId;
+
     if (this.gameRoomIsWaiting() && this.allPlayersReady()) {
       this.startGameRoom();
     }
@@ -79,6 +80,11 @@ class GameRoom {
   removePlayerFromRoom(playerId) {
     if (this.playerInRoom(playerId)) {
       delete this.state.current.players[playerId];
+
+      if (this.getTotalNumberOfPlayers() > 0) {
+        const anotherPlayer = this.getPlayerIds()[0];
+        this.state.current.host = anotherPlayer;
+      }
     }
   }
 
@@ -93,19 +99,15 @@ class GameRoom {
 
   startPhaseIncrementTimer() {
     console.log('timer started');
-
-    this.timer = setTimeout(async () => {
+    const offset = 1500; // let's put an offset to give some buffer to account for machine drift
+    setTimeout(async () => {
       const room = await GameRoom.findByRoomId(this.id);
-      this.resetPlayersDone();
-      room.next();
-      await room.save();
-
-      console.log('triggering timer..............');
-    }, 1000 * this.state.current.phaseDuration);
-  }
-
-  clearPhaseIncrementTimer() {
-    clearTimeout(this.timer);
+      if (!room.gameRoomIsFinished()) {
+        room.resetPlayersDone();
+        room.next();
+        await room.save();
+      }
+    }, 1000 * this.state.current.phaseDuration + offset);
   }
 
   resetPlayersDone() {
@@ -176,6 +178,11 @@ class GameRoom {
     }
   }
 
+  removeAllGames() {
+    this.state.gameData = [];
+    this.state.totalGames = 0;
+  }
+
   setRoundsForGame(type, rounds) {
     if (this.gameExists(type)) {
       const idx = this.getGameIndex(type);
@@ -188,10 +195,15 @@ class GameRoom {
     if (this.getTotalNumberOfPlayers() < 2) throw new BadOperationError('Need at least 2 players in room, cannot call next()');
     if (this.state.totalGames === 0) throw new BadOperationError('No games added to room, cannot call next()');
     console.log(`roomId=${this.id} calling next()`);
-    this.clearPhaseIncrementTimer();
     // get the current game to get the totalRounds, totalPhases
     const currentGame = this.getCurrentGame();
-    const { phase, round, game } = this.state.current;
+    const {
+      phase, round, game, status,
+    } = this.state.current;
+    console.log('next() called with:');
+    console.log(this.state.current);
+    console.log(this.state.totalScores);
+
     const { totalGames } = this.state;
     const { totalPhases, totalRounds } = currentGame;
     // increment the current phase
@@ -201,11 +213,18 @@ class GameRoom {
     const nextGame = nextRound === totalRounds ? game + 1 : game;
     const nextStatus = nextGame === totalGames ? 'finished' : 'playing';
 
-    // if the nextRound !== round, calculate score for previous round, add to totalScores
-    // sort totalScores in descending order
-    if (nextRound !== round) {
+    console.log(`  game: ${game} -> ${nextGame}`);
+    console.log(`  round: ${round} -> ${nextRound}`);
+    console.log(`  phase: ${phase} -> ${nextPhase}`);
+    console.log(`  phase: ${status} -> ${nextStatus}`);
+
+    // if we are going to the last phase of the game, calculate the totalScores for this round
+    // so that the leaderboard will have the information necessary
+    if (nextPhase === totalPhases - 1) {
       this.calculateScoresForGameRound(game, round);
     }
+
+    this.setGameRoomStatus(nextStatus);
 
     // modulo with limits to remove overflow
     this.state.current.game = nextGame % totalGames;
@@ -214,13 +233,18 @@ class GameRoom {
     this.state.current.phaseStartTime = Math.floor(Date.now() / 1000);
     this.state.current.phaseDuration = currentGame.phaseDurations[this.state.current.phase];
 
-    this.setGameRoomStatus(nextStatus);
     if (!this.gameRoomIsFinished()) {
+      console.log('game is still going, restarting timer');
       this.startPhaseIncrementTimer();
     }
+
+    console.log('next() ended with:');
+    console.log(this.state.current);
+    console.log(this.state.totalScores);
   }
 
   calculateScoresForGameRound(gameNum, roundNum) {
+    console.log(`calculating totalScore for gameNum=${gameNum} roundNum=${roundNum}`);
     const currentGame = this.getCurrentGame();
     const currentRound = currentGame.rounds[roundNum];
 
