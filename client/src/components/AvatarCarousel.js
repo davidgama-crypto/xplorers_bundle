@@ -1,7 +1,7 @@
 import React from 'react';
 import { Carousel } from 'react-responsive-carousel';
 
-import { Avatars } from '../utils/Avatars';
+import Avatars from '../utils/Avatars';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
 import '../css/AvatarCarousel.css';
 import { useRoomState } from '../store';
@@ -22,15 +22,24 @@ const AvatarCarousel = () => {
     <Carousel
       showThumbs={false}
       showStatus={false}
+      showIndicators={false}
       className="carouselDiv"
       showArrows
+      renderArrowNext={(onClickHandler, hasNext, label) => {
+        if (hasNext) return <button className="arrow nextArrow" onClick={onClickHandler} label={label}>{'>'}</button>;
+        return null;
+      }}
+      renderArrowPrev={(onClickHandler, hasPrev, label) => {
+        if (hasPrev) return <button className="arrow prevArrow" onClick={onClickHandler} label={label}>{'<'}</button>;
+        return null;
+      }}
       onClickItem={onClickItem}
       onClickThumb={onClickItem}
       onChange={onClickItem}
     >
       {Avatars.map((avatar) => (
         <div className="slide" key={avatar.id}>
-          <img key={avatar.id} src={avatar.image} alt="" />
+          <img key={avatar.id} src={avatar.image} className="avatarPic" alt="" />
         </div>
 
       ))}

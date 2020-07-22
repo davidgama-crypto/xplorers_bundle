@@ -1,3 +1,17 @@
+
+.waitingRoomContainer {
+    display: grid;
+    height: 100%;
+    width: 100%;
+    grid-template-rows: auto auto auto auto;
+    grid-template-columns: auto auto;
+    grid-template-areas:
+            "games players"
+            "games players"
+            "avatars players"
+            "avatars ready"
+}
+
 .createPlayerDiv{
     align-content: center;
     align-items: center;
@@ -16,32 +30,38 @@
     grid-template-rows: auto auto;
 }
 
-.gridWaitingContainer {
+
+.gamesPanel {
+    grid-area: games;
     display: grid;
-    height: 100%;
-    width: 100%;
-    grid-template-rows: auto 30%;
-    grid-template-columns: auto auto;
-    grid-template-areas:
-            "games players"
-            "avatars ready"
+    padding-top: 50px;
+    grid-template-rows: 10% auto;
+}
+.playersPanel {
+    grid-area: players;
+    display: grid;
+    padding-top: 50px;
+    grid-template-rows: 10% auto;
+}
+.avatarsPanel {
+    grid-area: avatars;
+    display: grid;
+    padding-top: 50px;
+    grid-template-rows: 10% auto;
 }
 
-.item-games {
-    grid-area: games;
+.avatarSelectionComponent {
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
-.item-players {
-    grid-area: players;
-}
-.item-avatars {
-    grid-area: avatars;
-}
-.item-ready {
+
+.readyPanel {
     grid-area: ready;
 }
 
 .readyBtn {
-    grid-area: item-ready;
+    grid-area: ready;
     align-items: center;
     grid-column-start: 2;
     grid-column-end: 2;
@@ -55,7 +75,7 @@
     grid-template-areas:
             "."
             "."
-            "item-ready";
+            "ready";
     justify-items: center;
 }
 

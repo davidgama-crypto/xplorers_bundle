@@ -1,7 +1,7 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
 import { Redirect } from 'react-router-dom';
-import { useRoomState, setCurrentPlayerReady, setGames } from '../store';
+import { useRoomState, setCurrentPlayerReady } from '../store';
 import PlayerCache from '../utils/PlayerCache';
 import '../css/WaitingRoom.css';
 import GameSelectionPanel from './GameSelectionPanel';
@@ -41,43 +41,28 @@ const WaitingRoom = () => {
 
   const isHost = () => host === id;
 
-  const addGames = () => {
-    // TODO CHANGE FOR ACTUAL GAME SELECTION ALL THIS SECTION
-    dispatch(setGames(roomId, {
-      games: [
-        {
-          type: 'test',
-          rounds: 1,
-        },
-      ],
-    }));
-  };
-
   // TODO: replace selected games and user list with actual components
   const disableReady = () => numberOfPlayers === 1 || numberOfGames === 0;
   return (
-    <div className="gridWaitingContainer">
-      <div className="games">
+    <div className="waitingRoomContainer">
+      <div className="gamesPanel">
+        <h1>Selected Games</h1>
         <GameSelectionPanel isHost={isHost()} />
       </div>
-      <div className="players">
+      <div className="playersPanel">
+        <h1>Current Players</h1>
         <div>
           <PlayersPanel />
         </div>
       </div>
-      <div className="createPlayerDiv">
-        <div className="gameSelectionGrid">
-          <h1>
-            Create Player
-          </h1>
-          <div className="gameSelectionDiv">
-            <div>
-              <AvatarSelectionPanel />
-            </div>
-          </div>
+      <div className="avatarsPanel">
+        <h1>Select Avatar</h1>
+        <div className="avatarSelectionComponent">
+          <AvatarSelectionPanel />
         </div>
+
       </div>
-      <div className="readyDiv">
+      <div className="readyPanel">
         <div className="readyBtn">
           <button type="button" onClick={togglePlayerReady} className="roomCreateBtn" disabled={disableReady()}>{ ready ? 'Not Ready' : 'Ready'}</button>
         </div>

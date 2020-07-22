@@ -5,7 +5,7 @@ import manAvatar from '../resources/man.png';
 import pigAvatar from '../resources/pig.png';
 import womanAvatar from '../resources/woman.png';
 
-export const Avatars = [
+const Avatars = [
   {
     id: 'BUNNY_AVATAR',
     image: bunnyAvatar,
@@ -31,3 +31,5 @@ export const Avatars = [
     image: womanAvatar,
   },
 ];
+
+export default Avatars;

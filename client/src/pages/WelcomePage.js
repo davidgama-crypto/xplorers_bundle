@@ -4,7 +4,7 @@ import { Redirect } from 'react-router-dom';
 import { createNewRoom, useRoomState } from '../store';
 import logo from '../resources/bundleLogo.png';
 import '../css/WelcomePage.css';
-import { Avatars } from '../utils/Avatars';
+import Avatars from '../utils/Avatars';
 
 const WelcomePage = () => {
   const dispatch = useDispatch();

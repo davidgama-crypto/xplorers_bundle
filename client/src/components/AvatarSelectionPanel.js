@@ -1,5 +1,5 @@
 import React from 'react';
-import '../css/GameSelectionPanel.css';
+import '../css/AvatarSelectionPanel.css';
 import AvatarCarousel from './AvatarCarousel';
 import APIRequestHandler from '../utils/ApiRequestHandler';
 import { useRoomState } from '../store';

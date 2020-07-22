@@ -1,6 +1,6 @@
 import React from 'react';
 import '../css/AvatarPlayer.css';
-import { Avatars } from '../utils/Avatars';
+import Avatars from '../utils/Avatars';
 
 const AvatarPlayer = (props) => {
   const getAvatarImage = () => {
