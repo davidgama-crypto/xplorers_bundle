@@ -31,11 +31,17 @@ const gameRoom = createSlice({
       };
       state.loading = false;
     },
+    clearRoom: (state) => {
+      state.roomId = null;
+      state.loading = false;
+      state.error = null;
+      state.roomState = null;
+    },
   },
 });
 
 export const {
-  roomStateUpdating, roomStateUpdated, roomErrored, roomCreated,
+  roomStateUpdating, roomStateUpdated, roomErrored, roomCreated, clearRoom,
 } = gameRoom.actions;
 
 /* Async Thunk Actions */
