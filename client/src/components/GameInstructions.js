@@ -3,7 +3,7 @@ import Timer from './Timer';
 import '../css/GameInstructions.css';
 
 const GameInstructions = ({
-  gameTitle, gameInstructions, time, endTime,
+  gameTitle, gameInstructions, time, endTime, footer,
 }) => (
   <div className="gameInstructionsWrapper">
     <div className="instructionsSection">
@@ -21,6 +21,9 @@ const GameInstructions = ({
     <div className="instructionsSection">
       {gameInstructions.map((e, i) => <label key={e} className="gameInstruction">{`${i + 1}) ${e}`}</label>)}
 
+    </div>
+    <div className="instructionsSection">
+      <h3>{footer || 'Good luck, have fun!'}</h3>
     </div>
 
   </div>
