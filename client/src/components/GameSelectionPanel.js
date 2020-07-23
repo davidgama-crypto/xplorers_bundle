@@ -14,8 +14,8 @@ const GameSelectionPanel = (props) => {
     const arrayFiltered = roomState.gameData.filter((data) => getGameFromArray(data, gameSelected));
     return arrayFiltered.length === 1;
   };
-  const handleOnClick = (idGameSelected) => (e) => {
-    console.log(idGameSelected);
+  const handleOnClick = (idGameSelected) => () => {
+    console.debug(idGameSelected);
     if (props.isHost) {
       const element = document.getElementById(idGameSelected);
       const gamesSelectedArray = roomState.gameData;
@@ -26,7 +26,7 @@ const GameSelectionPanel = (props) => {
           type: idGameSelected,
           rounds: 1,
         };
-        if (gamesSelectedArray === undefined || gamesSelectedArray.length === 0){
+        if (gamesSelectedArray === undefined || gamesSelectedArray.length === 0) {
           arrayFiltered.push(gameData);
         } else {
           gamesSelectedArray.push(gameData);
@@ -42,9 +42,6 @@ const GameSelectionPanel = (props) => {
   };
   return (
     <div className="gameSelectionGrid">
-      <h1>
-        Game Selection
-      </h1>
       <div className="gameSelectionDiv">
         {GAMES_CATALOG.map((game) => (
           <div key={game.id}>

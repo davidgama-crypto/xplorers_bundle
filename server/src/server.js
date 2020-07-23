@@ -9,12 +9,13 @@ const roomsRouter = require('./routers/rooms');
 
 const app = express();
 
+app.use('/api/bot', botRouter);
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(logger('dev'));
 
-app.use('/api/bot', botRouter);
 app.use('/api/rooms', roomsRouter);
 
 // Serve static files from the React app

@@ -1,4 +1,3 @@
-const { connect } = require('socket.io-client');
 const GameRoom = require('../models/GameRoom');
 const Player = require('../models/Player');
 const MissingResourceError = require('../errors/MissingResourceError');
@@ -58,11 +57,11 @@ class RoomsController {
 
   static async updateRoomGames(roomId, playerId, gamesToAdd) {
     const room = await RoomsController.getRoomById(roomId);
-    console.log('gamesToAdd:'  +gamesToAdd);
+    console.log(`gamesToAdd:${gamesToAdd}`);
     if (!room.playerIsHost(playerId)) throw new NotPermittedError(`playerId=${playerId} is not host of roomId=${roomId}`);
-    if(gamesToAdd.length === 0){
+    if (gamesToAdd.length === 0) {
       room.removeAllGames();
-    }else{
+    } else {
       gamesToAdd.forEach((e) => room.addGame(e.type, e.rounds));
     }
     const updatedRoom = await room.save();

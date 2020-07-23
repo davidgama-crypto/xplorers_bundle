@@ -31,11 +31,17 @@ const gameRoom = createSlice({
       };
       state.loading = false;
     },
+    clearRoom: (state) => {
+      state.roomId = null;
+      state.loading = false;
+      state.error = null;
+      state.roomState = null;
+    },
   },
 });
 
 export const {
-  roomStateUpdating, roomStateUpdated, roomErrored, roomCreated,
+  roomStateUpdating, roomStateUpdated, roomErrored, roomCreated, clearRoom,
 } = gameRoom.actions;
 
 /* Async Thunk Actions */
@@ -60,7 +66,7 @@ export function createNewRoom() {
 // playerJoiningRoom(roomId): adds a new user to the given roomId
 // if there is cached player info on the browser, use that as basis for the request
 export function playerJoiningRoom(roomId) {
-  let info = { displayName: 'defaultUser', avatar: 'PIG_AVATAR' };
+  let info = { displayName: 'defaultUser', avatar: 'BUNNY_AVATAR' };
 
   if (PlayerCache.cachedInfoExists()) {
     info = PlayerCache.getPlayerInfo();

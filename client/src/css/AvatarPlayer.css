@@ -20,5 +20,13 @@
 }
 
 .playerNameDiv{
-    word-break: break-word;
+    height: 50px;
+}
+
+.isReady {
+    color: green
+}
+
+.isSelf {
+    font-weight: bold;
 }

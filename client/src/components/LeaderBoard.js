@@ -1,17 +1,22 @@
 import React from 'react';
+import { useHistory } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 import PlayerScore from './PlayerScore';
 import {
   useRoomState,
+  clearRoom,
 } from '../store';
 import '../css/LeaderBoard.css';
 
 const LeaderBoard = () => {
+  const history = useHistory();
+  const dispatch = useDispatch();
   const {
     roomState,
   } = useRoomState();
   const setPlayersScores = (playerInfo) => {
     let playerFiltered;
-    for (let i = 0; i < Object.keys(roomState.current.players).length; i++) {
+    for (let i = 0; i < Object.keys(roomState.current.players).length; i += 1) {
       const key = Object.keys(roomState.current.players)[i];
       if (playerInfo.playerId === key) {
         playerFiltered = roomState.current.players[key];
@@ -20,7 +25,10 @@ const LeaderBoard = () => {
     // eslint-disable-next-line max-len
     return <PlayerScore key={playerInfo.playerId} name={playerFiltered.displayName} score={playerInfo.score} playerInfo={playerFiltered} />;
   };
-  const title = roomState.current.status === 'finished' ? 'Final Leaderboard' : 'Leaderboard';
+
+  const gameIsFinished = roomState.current.status === 'finished';
+
+  const title = gameIsFinished ? 'Final Leaderboard' : 'Leaderboard';
 
   return (
     <div>
@@ -40,6 +48,22 @@ const LeaderBoard = () => {
           setPlayersScores(playerScore)
         ))}
       </div>
+      {
+        gameIsFinished ? (
+          <div className="goHomeDiv">
+            <button
+              className="goHomeBtn"
+              onClick={() => {
+                dispatch(clearRoom());
+                history.push('/');
+              }}
+            >
+              Play Again
+            </button>
+          </div>
+        ) : null
+      }
+
     </div>
 
   );

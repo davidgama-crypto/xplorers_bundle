@@ -34,7 +34,7 @@ const GameRoomPage = () => {
     alert(error.message);
     return (
       <>
-        <Redirect to="/" />
+        <Redirect push to="/" />
       </>
     );
   }
@@ -42,7 +42,7 @@ const GameRoomPage = () => {
   // Determines if a room is ready to be rendered
   const roomIsReady = () => roomId !== null
     && roomState !== null
-    && !loading && !error
+    && !error
     && PlayerCache.cachedInfoExists()
     && PlayerCache.playerTokenExists()
     && roomState.current !== undefined

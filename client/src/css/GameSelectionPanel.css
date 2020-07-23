@@ -14,7 +14,6 @@
 .gameSelectionGrid{
     display: grid;
     grid-template-rows: auto auto;
-    padding-top: 30px;
 }
 
 .gameSelectTestDiv{
@@ -33,5 +32,3 @@
     background-position: center;
     background-repeat: no-repeat;
 }
-
-

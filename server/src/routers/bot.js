@@ -11,7 +11,6 @@ const slackSigningSecret = process.env.SLACK_SIGNING_SECRET;
 const slackToken = process.env.SLACK_TOKEN;
 const serverURL = process.env.SELF_DOMAIN;
 
-
 if (!slackSigningSecret || !slackToken || !serverURL) {
   console.error(
     'SLACK_SIGNING_SECRET or SLACK_TOKEN or SELF_DOMAIN env var not set!',
@@ -27,7 +26,7 @@ slackEvents.on('app_mention', async (event) => {
   console.log('Incoming app_mention event.text:', event.text);
   let text = '';
   if (event.text.includes('play')) {
-    const { url } = await RoomsController.generateRoom();
+    const { url } = await RoomsController.generateRoom(serverURL);
     text = url;
   } else {
     text = "Sorry I didn't quite get that, try saying `@bundle let's play!`";
