@@ -32,4 +32,10 @@ const Avatars = [
   },
 ];
 
+export function getImageForAvatarId(avatarId) {
+  const result = Avatars.find((e) => e.id === avatarId);
+  if (result) return result.image;
+  return undefined;
+}
+
 export default Avatars;

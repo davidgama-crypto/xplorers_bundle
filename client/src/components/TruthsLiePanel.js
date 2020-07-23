@@ -68,9 +68,8 @@ const TruthsLiePanel = (props) => {
           optionSelected={optionSelected}
         />
       );
-    } else {
-      return null;
     }
+    return null;
   };
   return (
     <div className="container-fluid questionsPanel">

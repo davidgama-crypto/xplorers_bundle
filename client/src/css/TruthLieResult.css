@@ -1,0 +1,28 @@
+.answerWrapper {
+  width: fit-content;
+  min-width: 500px;
+  display: grid;
+  grid-template-columns: auto 400px;
+  grid-template-rows: auto;
+}
+
+.playerChoicesSection {
+  border: 6px solid white;
+  display: grid;
+  grid-template-columns: auto;
+  grid-template-rows: auto auto auto auto;
+
+}
+
+.questionsSelectionSection {
+  padding: 0
+}
+.avatarChoiceRow {
+  display: flex;
+  align-items: center;
+  flex-direction: row-reverse;
+}
+
+.avatarRowImage {
+  width: 35px;
+}
