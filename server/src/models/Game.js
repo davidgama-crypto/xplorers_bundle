@@ -47,6 +47,7 @@ class Game {
           5,
           30,
           120,
+          60,
           10,
         ];
         break;
@@ -66,8 +67,8 @@ class Game {
         fn = (singlePlayerState) => 10 * singlePlayerState;
         break;
       case 'TRUTHS_LIES':
-        //TODO CALCULATE GAME SCORES
-        fn = (singlePlayerState) =>  singlePlayerState['answers']!== undefined?singlePlayerState['answers'].length*10:0;
+        // TODO CALCULATE GAME SCORES
+        fn = (singlePlayerState) => (singlePlayerState.answers !== undefined ? singlePlayerState.answers.length * 10 : 0);
         break;
       default:
         throw new Error(`Unsupported game type=${type}`);
@@ -82,7 +83,7 @@ class Game {
         totalPhases = 3;
         break;
       case 'TRUTHS_LIES':
-        totalPhases = 4;
+        totalPhases = 5;
         break;
       default:
         throw new Error(`Unsupported game type=${type}`);

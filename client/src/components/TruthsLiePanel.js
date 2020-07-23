@@ -7,7 +7,16 @@ import PlayerCache from '../utils/PlayerCache';
 import Timer from './Timer';
 
 const TruthsLiePanel = (props) => {
-  const [state, setState] = useState(new Set());
+  console.log('inside rendering truths lie panel');
+
+  // {
+  //   'playerId': {
+  //     choice: 0,
+  //     correct: true
+  //   }
+  // }
+
+  const [state, setState] = useState({});
   const dispatch = useDispatch();
   const { id } = PlayerCache.getPlayerInfo();
   const submitted = props.roomState.current.players[id].done;
@@ -20,23 +29,40 @@ const TruthsLiePanel = (props) => {
       }
       return true;
     });
-    const answersArray = Array.from(state);
+    // array of player ids for which this player was correct
+    const answersArray = [];
+    // map of playerids and question number for this players choices
+    const playerChoices = {};
+
+    Object.entries(state).forEach((e) => {
+      const [playerId, info] = e;
+      const { choice, correct } = info;
+      if (correct) answersArray.push(playerId);
+      playerChoices[playerId] = choice;
+    });
     const actualQuestions = questions.questions;
-    const actualPlayerState = { questions: actualQuestions, answers: answersArray };
+    const actualPlayerState = { questions: actualQuestions, answers: answersArray, choices: playerChoices };
 
     dispatch(submitPlayerState(props.roomState.id, actualPlayerState));
     dispatch(playerIsDone(props.roomState.id));
   };
-  const optionSelected = (isLie, playerId) => {
+  const optionSelected = (isLie, playerId, questionNumber) => {
+    console.log('calling truth lie panel options selected');
+    state[playerId] = {
+      choice: questionNumber,
+    };
     if (isLie) {
       // add value to the set
-      setState((prev) => new Set(prev.add(playerId)));
+      state[playerId].correct = true;
     } else {
-      // Remove value from the set if exists
-      setState((prev) => new Set([...prev].filter((player) => player !== playerId)));
+      state[playerId].correct = false;
     }
+    console.log('setting state');
+    console.log(state);
+    setState({ ...state });
   };
-  const renderGame = (key, questions) => {
+  const renderGame = (key, playerState) => {
+    console.log('inside render game');
     let playerFiltered;
     for (let i = 0; i < Object.keys(props.roomState.current.players).length; i++) {
       const playerKey = Object.keys(props.roomState.current.players)[i];
@@ -44,9 +70,11 @@ const TruthsLiePanel = (props) => {
         playerFiltered = props.roomState.current.players[playerKey];
       }
     }
+    // if not the current player
     if (id !== playerFiltered.id) {
-      console.log(questions);
-      let questionArray = Array.from(questions.questions);
+      console.log('not the current player');
+      console.log(playerState);
+      let questionArray = Array.from(playerState.questions);
       questionArray = questionArray.sort((a, b) => {
         if (a.question > b.question) {
           return 1;
@@ -58,6 +86,13 @@ const TruthsLiePanel = (props) => {
         return 0;
       });
       console.log(questionArray);
+      console.log(state);
+      console.log(key);
+
+      let selected;
+      if (state[key] && state[key].choice) {
+        selected = state[key].choice;
+      }
 
       return (
         <TruthsLieSelection
@@ -66,6 +101,7 @@ const TruthsLiePanel = (props) => {
           playerName={playerFiltered.displayName}
           questions={questionArray}
           optionSelected={optionSelected}
+          selectedQuestionNumber={selected}
         />
       );
     }
@@ -87,7 +123,7 @@ const TruthsLiePanel = (props) => {
       </div>
       <div className="questions">
         {
-          Object.entries(props.playerState).map(([key, value]) => renderGame(key, value))
+          Object.entries(props.playerState).map(([somePlayerId, theirState]) => renderGame(somePlayerId, theirState))
         }
       </div>
       <div className="itemButton">

@@ -2,36 +2,49 @@ import React, { useState } from 'react';
 import '../css/TruthsLieSelection.css';
 
 const TruthsLieSelection = (props) => {
-  const { readOnly } = props;
-
+  const { readOnly, selectedQuestionNumber } = props;
   let initialCheckedState = [false, false, false];
+  if (selectedQuestionNumber !== undefined) {
+    initialCheckedState[selectedQuestionNumber] = true;
+  }
+
   let optionSelected = () => {};
   if (readOnly === true) {
     initialCheckedState = props.questions.map((e) => e.lie);
   }
 
+  console.log('rendering truths lie selection');
+  console.log('initial state');
+  console.log(initialCheckedState);
+
   const [checkedState, setChecked] = useState(initialCheckedState);
 
   if (!readOnly) {
+    console.log('not readonly, attaching handler');
     optionSelected = (e) => {
+      console.log('options selected running');
       let isLie;
+      let questionNum;
       switch (e.target.id) {
         case 'optionRadio1':
           isLie = props.questions[0].lie;
           checkedState[0] = !checkedState[0];
+          questionNum = 0;
           break;
         case 'optionRadio2':
           isLie = props.questions[1].lie;
           checkedState[1] = !checkedState[1];
+          questionNum = 1;
           break;
         case 'optionRadio3':
           isLie = props.questions[2].lie;
           checkedState[2] = !checkedState[2];
+          questionNum = 2;
           break;
         default:
           break;
       }
-      props.optionSelected(isLie, props.playerId);
+      props.optionSelected(isLie, props.playerId, questionNum);
       setChecked(checkedState);
     };
   }

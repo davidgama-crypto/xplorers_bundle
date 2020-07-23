@@ -12,6 +12,7 @@ class GameRoom {
     this.id = roomId;
     this.io = io;
     this.playerConnections = {};
+    this.timer = null;
 
     this.state = {
       id: roomId,
@@ -33,10 +34,8 @@ class GameRoom {
   // Get a GameRoom by RoomId
   static async findByRoomId(roomId) {
     try {
-      const storeState = await GameRoom.DataStore.get(roomId);
-      const instance = new GameRoom(roomId);
-      instance.state = storeState;
-      return instance;
+      const roomInstance = await GameRoom.DataStore.get(roomId);
+      return roomInstance;
     } catch (err) {
       if (err.message.includes("doesn't exist")) throw new MissingResourceError(err.message);
       throw err;
@@ -97,10 +96,17 @@ class GameRoom {
     this.startPhaseIncrementTimer();
   }
 
+  clearPhaseIncrementTimer() {
+    if (this.timer) clearTimeout(this.timer);
+  }
+
   startPhaseIncrementTimer() {
+    // clear any previous timers if they exist
+    this.clearPhaseIncrementTimer();
+
     console.log('timer started');
     const offset = 1500; // let's put an offset to give some buffer to account for machine drift
-    setTimeout(async () => {
+    this.timer = setTimeout(async () => {
       const room = await GameRoom.findByRoomId(this.id);
       if (!room.gameRoomIsFinished()) {
         room.resetPlayersDone();
@@ -334,7 +340,7 @@ class GameRoom {
   // TODO: fix this to account for race conditions when retrieving and updating game data in redis
   async save() {
     const key = this.state.id;
-    await GameRoom.DataStore.set(key, this.state);
+    await GameRoom.DataStore.set(key, this);
     this.notifyRoomChanged();
     return this;
   }

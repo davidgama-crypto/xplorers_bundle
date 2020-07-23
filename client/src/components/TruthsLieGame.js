@@ -4,11 +4,20 @@ import GameInstructions from './GameInstructions';
 import LeaderBoard from './LeaderBoard';
 import TruthsLiesQuestions from './TruthsLiesQuestions';
 import TruthsLiePanel from './TruthsLiePanel';
+import TruthsLieAnswers from './TruthsLieAnswers';
 
 const TruthsLieGame = (props) => {
   const endTimeFunction = () => {
     console.debug('endTimeFunction');
   };
+
+  const { roomState } = props;
+  const { current, gameData } = roomState;
+  const {
+    game, round, players, phaseDuration,
+  } = current;
+  const currentGameData = gameData[game].rounds[round];
+  const { playerState } = currentGameData;
 
   const phaseRenderer = () => {
     switch (props.roomState.current.phase) {
@@ -39,9 +48,18 @@ const TruthsLieGame = (props) => {
           />
         );
       case 3:
+        return (
+          <TruthsLieAnswers
+            players={players}
+            playerState={playerState}
+            phaseDuration={phaseDuration}
+            onPhaseEnd={() => {}}
+          />
+        );
+      case 4:
         return <LeaderBoard totalScores={props.roomState.totalScores} />;
       default:
-        return <Redirect to="/" />;
+        return <Redirect push to="/" />;
     }
   };
 
