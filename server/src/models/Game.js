@@ -45,10 +45,10 @@ class Game {
       case 'TRUTHS_LIES':
         durations = [
           5,
-          30,
           120,
-          60,
+          30,
           10,
+          5,
         ];
         break;
       default:
