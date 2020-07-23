@@ -30,7 +30,7 @@ const TruthLieResult = ({
   return (
     <div className="answerWrapper">
       <div className="playerChoicesSection">
-        <div className="avatarChoiceRow" />
+        <div className="avatarChoiceRow">Choices</div>
         <div className="avatarChoiceRow">{renderAvatarRow(0, avatarRows)}</div>
         <div className="avatarChoiceRow">{renderAvatarRow(1, avatarRows)}</div>
         <div className="avatarChoiceRow">{renderAvatarRow(2, avatarRows)}</div>
