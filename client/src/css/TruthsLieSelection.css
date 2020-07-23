@@ -1,0 +1,47 @@
+.bundleFontColor{
+    color: #449DDC;
+    padding-bottom: 5px;
+}
+
+.form-check{
+    padding-bottom: 10px;
+    padding-left: 10px;
+}
+
+.items{
+    padding-bottom: 20px;
+    font-size: x-large;
+}
+
+.itemHeader {
+    place-self: center;
+    grid-area: itemHeader;
+    font-size: x-large;
+}
+.itemQuestionOne{
+    grid-area: questonOne;
+}
+.itemQuestionTwo {
+    grid-area: questionTwo;
+}
+.itemQuestionThree{
+    grid-area: quesionThree;
+}
+
+
+.questionsSelDiv{
+    display: grid;
+    grid-template-columns: 30% auto 30% ;
+    grid-template-rows: auto;
+    grid-template-areas:
+            ". itemHeader ."
+            ". questonOne ."
+            ". questionTwo ."
+            ". quesionThree ."
+            ". . .";
+
+    border: 6px solid #000000;
+    box-sizing: border-box;
+    border-radius: 40px;
+    max-width: 400px;
+}

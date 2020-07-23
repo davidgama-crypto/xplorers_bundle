@@ -1,0 +1,37 @@
+.itemHeader {
+    place-self: center;
+    grid-area: itemHeader;
+    font-size: x-large;
+}
+.itemTimer{
+    grid-area: timer;
+    place-self: center;
+}
+.itemMessage {
+    grid-area: message;
+    justify-self: start;
+}
+.questions{
+    grid-area: questions;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+}
+.itemButton{
+    grid-area: itemButton;
+    place-self: end;
+}
+
+
+.questionsPanel{
+    display: grid;
+    grid-template-columns: 10% auto 10%;
+    grid-template-rows: auto auto auto 1fr 1fr;
+    grid-template-areas:
+            ". itemHeader ."
+            ". timer ."
+            "message message ."
+            "questions questions questions"
+            ". itemButton ."
+}
