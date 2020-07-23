@@ -2,6 +2,7 @@ import React from 'react';
 import Spinner from 'react-bootstrap/Spinner';
 import { useRoomState } from '../store';
 import TestGame from './TestGame';
+import TruthsLieGame from './TruthsLieGame';
 
 const ActiveGameRenderer = () => {
   console.debug('In ActiveGameRenderer render()');
@@ -16,6 +17,8 @@ const ActiveGameRenderer = () => {
     switch (gameType) {
       case 'TEST':
         return <TestGame />;
+      case 'TRUTHS_LIES':
+        return <TruthsLieGame roomState={roomState} />;
       default:
         return <Spinner />;
     }

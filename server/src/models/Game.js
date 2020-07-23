@@ -22,6 +22,9 @@ class Game {
       case 'TEST':
         initState = {};
         break;
+      case 'TRUTHS_LIES':
+        initState = {};
+        break;
       default:
         throw new Error(`Unsupported game type=${type}`);
     }
@@ -36,6 +39,14 @@ class Game {
         durations = [
           5,
           5,
+          10,
+        ];
+        break;
+      case 'TRUTHS_LIES':
+        durations = [
+          5,
+          30,
+          120,
           10,
         ];
         break;
@@ -54,6 +65,10 @@ class Game {
         // should be a number
         fn = (singlePlayerState) => 10 * singlePlayerState;
         break;
+      case 'TRUTHS_LIES':
+        //TODO CALCULATE GAME SCORES
+        fn = (singlePlayerState) =>  singlePlayerState['answers']!== undefined?singlePlayerState['answers'].length*10:0;
+        break;
       default:
         throw new Error(`Unsupported game type=${type}`);
     }
@@ -65,6 +80,9 @@ class Game {
     switch (type) {
       case 'TEST':
         totalPhases = 3;
+        break;
+      case 'TRUTHS_LIES':
+        totalPhases = 4;
         break;
       default:
         throw new Error(`Unsupported game type=${type}`);
