@@ -7,13 +7,13 @@ const TruthsLieSelection = (props) => {
     let isLie;
     switch (e.target.id) {
       case 'optionRadio1':
-        isLie = props.questions.questions[0].lie;
+        isLie = props.questions[0].lie;
         break;
       case 'optionRadio2':
-        isLie = props.questions.questions[1].lie;
+        isLie = props.questions[1].lie;
         break;
       case 'optionRadio3':
-        isLie = props.questions.questions[2].lie;
+        isLie = props.questions[2].lie;
         break;
       default:
         break;
@@ -28,19 +28,19 @@ const TruthsLieSelection = (props) => {
       <div className="form-check itemQuestionOne items">
         <input className="form-check-input" type="radio" name={props.playerId} id="optionRadio1" value="option1" onChange={optionSelected} />
         <label className="form-check-label" htmlFor="exampleRadios1">
-          {props.questions.questions[0].question}
+          {props.questions[0].question}
         </label>
       </div>
       <div className="form-check itemQuestionTwo items">
         <input className="form-check-input" type="radio" name={props.playerId} id="optionRadio2" value="option2" onChange={optionSelected} />
         <label className="form-check-label" htmlFor="optionRadio2">
-          {props.questions.questions[1].question}
+          {props.questions[1].question}
         </label>
       </div>
       <div className="form-check itemQuestionThree items">
         <input className="form-check-input" type="radio" name={props.playerId} id="optionRadio3" value="option3" onChange={optionSelected} />
         <label className="form-check-label" htmlFor="optionRadio3">
-          {props.questions.questions[2].question}
+          {props.questions[2].question}
         </label>
       </div>
     </div>

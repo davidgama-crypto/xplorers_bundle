@@ -45,12 +45,26 @@ const TruthsLiePanel = (props) => {
       }
     }
     if (id !== playerFiltered.id) {
+      console.log(questions);
+      let questionArray = Array.from(questions.questions);
+      questionArray = questionArray.sort((a, b) => {
+        if (a.question > b.question) {
+          return 1;
+        }
+        if (a.question < b.question) {
+          return -1;
+        }
+        // a must be equal to b
+        return 0;
+      });
+      console.log(questionArray);
+
       return (
         <TruthsLieSelection
           key={key}
           playerId={playerFiltered.id}
           playerName={playerFiltered.displayName}
-          questions={questions}
+          questions={questionArray}
           optionSelected={optionSelected}
         />
       );
