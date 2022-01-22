@@ -18,7 +18,7 @@
     "jade": "~1.11.0",
     "jsonwebtoken": "^8.5.1",
     "morgan": "~1.9.1",
-    "nanoid": "^3.1.10",
+    "nanoid": "^3.1.31",
     "redis": "^3.0.2",
     "redis-json": "^4.0.1",
     "socket.io": "^2.3.0",
